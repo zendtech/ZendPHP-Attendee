@@ -1,0 +1,9 @@
+FROM cr.zend.com/zendphp/7.4:ubuntu-20.04-cli
+COPY finish_install.sh /usr/local/sbin/finish_install.sh
+ENV TZ=UTC
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN zendphpctl.sh EXT enable ffi pdo
+RUN zendphpctl.sh PECL build swoole 30-swoole
+RUN chmod +x /usr/local/sbin/*.sh
+RUN /usr/local/sbin/finish_install.sh
+

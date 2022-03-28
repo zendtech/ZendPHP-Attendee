@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: esc
+  annotations:
+    phpversion: 8.0.3
+  labels:
+    io.esc.service: php-fpm
+  name: php-fpm
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      io.esc.service: php-fpm
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        io.esc.service: php-fpm
+    spec:
+      containers:
+        - image: eu.gcr.io/zendphp-313619/esc-fpm
+          livenessProbe:
+            exec:
+              command:
+                - /usr/local/bin/fpm-healthcheck.sh
+            failureThreshold: 2
+            periodSeconds: 10
+            timeoutSeconds: 2
+          name: php-fpm
+          resources: {}
+      restartPolicy: Always
+status: {}
