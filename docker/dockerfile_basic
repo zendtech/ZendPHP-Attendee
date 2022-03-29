@@ -1,9 +1,21 @@
-FROM cr.zend.com/zendphp/7.4:ubuntu-20.04-cli
-COPY finish_install.sh /usr/local/sbin/finish_install.sh
+FROM cr.zend.com/zendphp/8.1:ubuntu-20.04-cli
 ENV TZ=UTC
+COPY finish_install.sh /usr/local/sbin/finish_install.sh
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get update
+RUN apt-get install -y php8.1-zend-dev php8.1-zend-xml libssl-dev
+# Fix problems in PEAR like this:
+# PHP Fatal error:  Array and string offset access syntax with curly braces is no longer supported in /usr/share/php/PEAR/Config.php on line 2095
+# find /usr/share/php -exec php -l {} \; |grep -v "No syntax errors"
+RUN find /usr/share/php -type f -exec sed -i 's/{0}/[0]/g' {} \; && \
+    find /usr/share/php -type f -exec sed -i 's/{1}/[1]/g' {} \; && \
+    find /usr/share/php -type f -exec sed -i 's/{strlen($value) - 1}/[strlen($value) - 1]/g' {} \; && \
+    find /usr/share/php -type f -exec sed -i 's/$arg{$i}/$arg[$i]/g' {} \; && \
+    find /usr/share/php -type f -exec sed -i 's/$spec{2}/$spec[2]/g' {} \; && \
+    find /usr/share/php -type f -exec sed -i 's/{strlen($root) - 1}/[strlen($root) - 1]/g' {} \; && \
+    sed -i 's/time\(\) - $cacheid/\!empty\($cacheid\) && time\(\) - $cacheid/g' /usr/share/php/PEAR/REST.php
 RUN zendphpctl.sh EXT enable ffi pdo
-RUN zendphpctl.sh PECL build swoole 30-swoole
+RUN zendphpctl.sh PECL build openswoole 30-swoole
 RUN chmod +x /usr/local/sbin/*.sh
 RUN /usr/local/sbin/finish_install.sh
-
+CMD /opt/app/swoole/prime_number_gen.php
