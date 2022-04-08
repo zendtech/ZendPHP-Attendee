@@ -1,5 +1,5 @@
 #!/bin/bash
-# enable YAML
+# enable the YAML extension
 phpenmod -v 8.1-zend -s cli yaml
 # install git + restore course repo
 apt-get install -y git

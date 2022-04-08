@@ -1,0 +1,40 @@
+ARG OS_VERSION=10
+ARG ZENDPHP_VERSION=7.4
+ARG BASE_IMAGE=fpm
+FROM cr.zend.com/zendphp/${ZENDPHP_VERSION}:debian-${OS_VERSION}-${BASE_IMAGE}
+
+# Customizations
+ARG TIMEZONE=UTC
+ARG INSTALL_COMPOSER=false
+ARG ZEND_PROFILE=production
+ARG SYSTEM_PACKAGES
+ARG ZEND_EXTENSIONS_LIST
+ARG PECL_EXTENSIONS_LIST
+ARG POST_BUILD_BASH
+ARG PMA_USER=admin
+ARG PMA_PASSWORD=password
+
+## Prepare tzdata
+ENV TZ=$TIMEZONE \
+    PROFILE=$ZEND_PROFILE
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+## Copy applications
+COPY ./data/apps/phpmyadmin511.tar.gz /phpmyadmin511.tar.gz
+COPY ./data/apps/testsc-100.tar.gz /testsc-100.tar.gz
+
+## Place configurations
+COPY ./data/conf/fpm/pma.conf /etc/zendphp/fpm/pool.d/www.conf
+COPY ./data/conf/fpm/testsc.conf /etc/zendphp/fpm/pool.d/testsc.conf
+
+## Copy shell scripts
+COPY ./data/scripts/wait-for.sh /usr/local/sbin/wait-for
+COPY ./data/scripts/wait-for-dbs.sh /entrypoint.d/99-wait-for-dbs.sh
+COPY ./data/scripts/post-build.sh /post-build.sh
+RUN chmod +x /usr/local/sbin/wait-for && \
+    chmod +x /entrypoint.d/99-wait-for-dbs.sh && \
+    chmod +x /post-build.sh
+
+## Customize PHP runtime according
+## to the given building arguments
+RUN apt-get update && ZendPHPCustomizeWithBuildArgs.sh
