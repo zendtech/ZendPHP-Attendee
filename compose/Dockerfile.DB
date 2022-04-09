@@ -1,0 +1,17 @@
+FROM mariadb:latest
+ENV DEBIAN_FRONTEND=noninteractive
+
+COPY ./data/scripts/geonames.sql /tmp/geonames.sql
+
+RUN apt-get -y update && \
+    apt-get -y upgrade && \
+    apt-get -y clean
+
+RUN echo "Creating geonames database and assigning permissions ..." && \
+    /etc/init.d/mysql start && \
+    sleep 5 && \
+    mysql -uroot -v -e "CREATE DATABASE geonames;" && \
+    mysql -uroot -v -e "CREATE USER 'geonames'@'localhost' IDENTIFIED BY 'password';" && \
+    mysql -uroot -v -e "GRANT ALL PRIVILEGES ON *.* TO 'geonames'@'localhost';" && \
+    mysql -uroot -v -e "FLUSH PRIVILEGES;" && \
+    mysql -uroot -v -e "SOURCE /tmp/geonames.sql;"

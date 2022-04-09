@@ -5,25 +5,17 @@ services:
   web-server:
     container_name: ws
     image: zendphp-esc/nginx
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.Nginx
-    expose:
-      - 8080
-      - 8081
-    ports:
-      - "8080:8080"
-      - "8081:8081"
-    extra_hosts:
-      - pma.lcl:127.0.0.1
-      - testsc.lcl:127.0.0.1
-      - pma.local:127.0.0.1
-      - testsc.local:127.0.0.1
+    networks:
+      httpd_net:
+        ipv4_address: 10.10.10.10
 
   php-fpm:
     container_name: zendphp
     image: zendphp-esc/fpm
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.FPM
       args:
@@ -32,33 +24,33 @@ services:
         SYSTEM_PACKAGES: 'netcat'
         ZEND_EXTENSIONS_LIST: 'mysql redis mbstring gd'
         POST_BUILD_BASH: '/post-build.sh'
-    expose:
-      - 9000
-      - 9001
     healthcheck:
       test: ["CMD-SHELL", "/usr/local/bin/fpm-healthcheck.sh"]
       interval: 10s
       timeout: 2s
       retries: 2
-  
+    networks:
+      httpd_net:
+        ipv4_address: 10.10.10.20
+
   db:
-    image: mariadb:latest
+    image: zendphp-esc/mariadb
+    build:
+      context: .
+      dockerfile: Dockerfile.DB
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpw
     volumes:
       - db-data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-
-  redis:
-    image: redis:alpine
-    restart: always
-    volumes:
-      - redis-data:/data
-    ports:
-      - "6379:6379"
+    networks:
+      httpd_net:
+        ipv4_address: 10.10.10.30
 
 volumes:
   db-data:
-  redis-data:
+
+networks:
+  httpd_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.10.0/24"
