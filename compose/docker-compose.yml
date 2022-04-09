@@ -4,17 +4,21 @@ services:
 
   web-server:
     container_name: ws
-    image: zendphp-esc/nginx
+    image: zendphp-jumpstart/nginx
+    depends_on: [php-fpm]
     build:
       context: .
       dockerfile: Dockerfile.Nginx
+    volumes: [code:/var/www/html:nocopy]
+    working_dir: /var/www/html
     networks:
       httpd_net:
         ipv4_address: 10.10.10.10
 
   php-fpm:
     container_name: zendphp
-    image: zendphp-esc/fpm
+    image: zendphp-jumpstart/fpm
+    depends_on: [maria-db]
     build:
       context: .
       dockerfile: Dockerfile.FPM
@@ -29,12 +33,14 @@ services:
       interval: 10s
       timeout: 2s
       retries: 2
+    volumes: [code:/var/www/html:nocopy]
+    working_dir: /var/www/html
     networks:
       httpd_net:
         ipv4_address: 10.10.10.20
 
-  db:
-    image: zendphp-esc/mariadb
+  maria-db:
+    image: zendphp-jumpstart/db
     build:
       context: .
       dockerfile: Dockerfile.DB
@@ -47,6 +53,7 @@ services:
 
 volumes:
   db-data:
+  code:
 
 networks:
   httpd_net:

@@ -17,9 +17,6 @@ ENV TZ=$TIMEZONE \
     PROFILE=$ZEND_PROFILE
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-## Place configurations
-COPY ./data/conf/fpm/pma.conf /etc/zendphp/fpm/pool.d/www.conf
-
 ## Copy shell scripts
 COPY ./data/scripts/wait-for.sh /usr/local/sbin/wait-for
 COPY ./data/scripts/wait-for-dbs.sh /entrypoint.d/99-wait-for-dbs.sh

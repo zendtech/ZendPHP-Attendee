@@ -1,12 +1,11 @@
 FROM mariadb:latest
 ENV DEBIAN_FRONTEND=noninteractive
 
-COPY ./data/scripts/geonames.sql /tmp/geonames.sql
-
 RUN apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y clean
 
+COPY ./data/scripts/geonames.sql /tmp/geonames.sql
 RUN echo "Creating geonames database and assigning permissions ..." && \
     /etc/init.d/mysql start && \
     sleep 5 && \
