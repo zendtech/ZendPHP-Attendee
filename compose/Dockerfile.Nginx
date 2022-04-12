@@ -5,6 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y update && \
     apt-get -y upgrade && \
     apt-get -y clean && \
+    apt-get install -y netcat && \
     rm -rf /tmp/* /var/lib/apt/lists/*
 
 RUN mkdir -p /var/www && \

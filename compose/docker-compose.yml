@@ -9,7 +9,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.Nginx
-    volumes: [code:/var/www/html:nocopy]
+    volumes:
+     - ./html:/var/www/html
     working_dir: /var/www/html
     networks:
       httpd_net:
@@ -24,16 +25,15 @@ services:
       dockerfile: Dockerfile.FPM
       args:
         TIMEZONE: 'Europe/London'
-        ZENDPHP_VERSION: 8.0
-        SYSTEM_PACKAGES: 'netcat'
-        ZEND_EXTENSIONS_LIST: 'mysql redis mbstring gd'
-        POST_BUILD_BASH: '/post-build.sh'
+        ZENDPHP_VERSION: 8.1
+        ZEND_EXTENSIONS_LIST: 'pdo_mysql mbstring gd'
     healthcheck:
       test: ["CMD-SHELL", "/usr/local/bin/fpm-healthcheck.sh"]
       interval: 10s
       timeout: 2s
       retries: 2
-    volumes: [code:/var/www/html:nocopy]
+    volumes:
+     - ./html:/var/www/html
     working_dir: /var/www/html
     networks:
       httpd_net:
@@ -41,6 +41,11 @@ services:
 
   maria-db:
     image: zendphp-jumpstart/db
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_DATABASE: geonames
+      MARIADB_USER: geonames
+      MARIADB_PASSWORD: password
     build:
       context: .
       dockerfile: Dockerfile.DB
