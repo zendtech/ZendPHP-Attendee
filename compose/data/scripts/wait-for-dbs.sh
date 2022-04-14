@@ -1,2 +1,2 @@
 #!/bin/sh
-sh -c 'wait-for db:3306 -t 300 -- echo "MariaDb is ready!"'
+sh -c 'wait-for db:9000 -t 300 -- echo "MongoDB is ready!"'

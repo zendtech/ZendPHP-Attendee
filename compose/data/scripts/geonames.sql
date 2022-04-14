@@ -1,4 +1,5 @@
-CREATE TABLE IF NOT EXISTS `geonames` (
+DROP TABLE IF EXISTS `geonames`;
+CREATE TABLE `geonames` (
   `id` int(8) unsigned NOT NULL auto_increment,
   `iso2` char(2) NOT NULL,
   `post_code` int(5) NOT NULL,

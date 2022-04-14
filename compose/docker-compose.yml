@@ -19,14 +19,13 @@ services:
   php-fpm:
     container_name: zendphp
     image: zendphp-jumpstart/fpm
-    depends_on: [maria-db]
     build:
       context: .
       dockerfile: Dockerfile.FPM
       args:
         TIMEZONE: 'Europe/London'
         ZENDPHP_VERSION: 8.1
-        ZEND_EXTENSIONS_LIST: 'pdo_mysql mbstring gd'
+        ZEND_EXTENSIONS_LIST: 'openssl mbstring gd'
     healthcheck:
       test: ["CMD-SHELL", "/usr/local/bin/fpm-healthcheck.sh"]
       interval: 10s
@@ -38,27 +37,6 @@ services:
     networks:
       httpd_net:
         ipv4_address: 10.10.10.20
-
-  maria-db:
-    image: zendphp-jumpstart/db
-    environment:
-      MARIADB_ROOT_PASSWORD: password
-      MARIADB_DATABASE: geonames
-      MARIADB_USER: geonames
-      MARIADB_PASSWORD: password
-    build:
-      context: .
-      dockerfile: Dockerfile.DB
-    restart: always
-    volumes:
-      - db-data:/var/lib/mysql
-    networks:
-      httpd_net:
-        ipv4_address: 10.10.10.30
-
-volumes:
-  db-data:
-  code:
 
 networks:
   httpd_net:
