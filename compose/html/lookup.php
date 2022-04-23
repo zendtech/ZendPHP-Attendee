@@ -50,37 +50,47 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
+define('DATA_FILE', __DIR__ . '/US_Post_Codes.txt');
 define('FMT_STRING', '%2s|%11s|%30s|%12s|%2s|%12s|%3s|%12s|%3s|%10s|%10s|%2s');
 define('HEADERS', ['ISO2','PostCode','City','State','Code','Name2','Code2','Name3','Code3','Latitude','Longitude','Accuracy']);
-$find_city = function ($row, $city, array &$status) {
-    if (str_contains($row[2], $city)) {
+function find_city( array &$resp,
+                    array $row,
+                    string $city,
+                    string $state = '')
+{
+    $ok = FALSE;
+    if (empty($state)) {
+        $ok = TRUE;
+    } else {
+        $name = $row[3] ?? '';
+        $code = $row[4] ?? '';
+        if (trim($row[3]) === $state) $ok = TRUE;
+        if (trim($row[4]) === $state) $ok = TRUE;
+    }
+    if ($ok && str_contains($row[2], $city)) {
         if (count($row) === 12) {
-            $status['status']++;
-            $status['data'][$row[1]] = array_combine(HEADERS, $row);
+            $resp['found']++;
+            $resp['data'][$row[1]] = array_combine(HEADERS, $row);
         }
     }
-};
-$resp = ['status' => 0];
+}
+$resp = ['found' => 0];
 $city  = $_REQUEST['city'] ?? $argv[1] ?? '';
 $state = $_REQUEST['state'] ?? $argv[2] ?? '';
 $city  = trim(strip_tags($city));
 $state = trim(strip_tags($state));
 if (empty($city)) {
-    $resp['status'] = 0;
+    $resp['found'] = 0;
     $resp['data'][] = 'You must specify a city';
 } else {
-    $data  = new SplFileObject(__DIR__ . '/../data/US_Post_Codes.txt');
+    $data  = new SplFileObject(DATA_FILE);
     while (!$data->eof()) {
         $row = $data->fgetcsv("\t");
         if (empty($row)) continue;
-        // if no state, just look by city
-        if (empty($state)) {
-            $find_city($row, $city, $resp);
-        } else {
-            if (str_contains($row[3], $state) || $row[4] === $state) {
-                $find_city($row, $city, $resp);
-            }
-        }
+        find_city($resp, $row, $city, $state);
     }
 }
+if (!empty($_REQUEST)) echo '<pre>';
 echo json_encode($resp, JSON_PRETTY_PRINT);
+if (!empty($_REQUEST)) echo '</pre>';
+echo PHP_EOL;
