@@ -1,0 +1,36 @@
+ZendHQ GUI - Linux
+==================
+
+This package contains the Linux version of the ZendHQ GUI.
+
+Installation
+------------
+
+Extract the content of this tar.gz file.
+
+The extracted directory contains the following files:
+
+* zend-hq-linux_x64 - main executable
+* resources.neu - application content, subject for automatic updates
+* Documentation, license files
+
+Usage
+-----
+
+Double-click zend-hq-linux_x64 to use this application.
+
+Configuration
+-------------
+
+The configuration file is automatically created and stored in your user config directory:
+
+* $HOME/.config/ZendHQ/config.json
+
+The application may create temporary files while in use.
+
+Help
+----
+
+For documentation, please visit:
+
+* https://help.zend.com/zendphp/ZendPHP-1.2/content/zendhq/zendhq.htm

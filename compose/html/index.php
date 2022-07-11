@@ -3,7 +3,7 @@
 
 *** Usage ***********************************************
 
-WEB: http://10.10.10.10/lookup.php?city=Xyz&state=ZZ
+WEB: http://10.10.10.10/index.php?city=Xyz&state=ZZ
 CLI: php lookup.php [CITY] [STATE]
 
 *** Source: https://download.geonames.org/export/zip/ ***
@@ -53,6 +53,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 define('DATA_FILE', __DIR__ . '/US_Post_Codes.txt');
 define('FMT_STRING', '%2s|%11s|%30s|%12s|%2s|%12s|%3s|%12s|%3s|%10s|%10s|%2s');
 define('HEADERS', ['ISO2','PostCode','City','State','Code','Name2','Code2','Name3','Code3','Latitude','Longitude','Accuracy']);
+$usage = [
+    'WEB' => 'http://10.10.nn.mm/index.php?city=Xyz&state=ZZ',
+    'CLI' => 'php lookup.php [CITY] [STATE]',
+];
+
 function find_city( array &$resp,
                     array $row,
                     string $city,
@@ -74,14 +79,14 @@ function find_city( array &$resp,
         }
     }
 }
-$resp = ['found' => 0];
+$resp['found'] = 0;
 $city  = $_REQUEST['city'] ?? $argv[1] ?? '';
 $state = $_REQUEST['state'] ?? $argv[2] ?? '';
 $city  = trim(strip_tags($city));
 $state = trim(strip_tags($state));
 if (empty($city)) {
     $resp['found'] = 0;
-    $resp['data'][] = 'You must specify a city';
+    $resp['data']['Usage'] = $usage;
 } else {
     $data  = new SplFileObject(DATA_FILE);
     while (!$data->eof()) {

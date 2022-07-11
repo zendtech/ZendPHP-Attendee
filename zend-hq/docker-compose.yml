@@ -3,8 +3,8 @@ version: '3.7'
 services:
 
   web-server:
-    container_name: ws-compose
-    image: zendphp-jumpstart/nginx-compose
+    container_name: ws-hq
+    image: zendphp-jumpstart/nginx-hq
     build:
       context: .
       dockerfile: Dockerfile.Nginx
@@ -13,11 +13,11 @@ services:
     working_dir: /var/www/html
     networks:
       httpd_net:
-        ipv4_address: 10.10.10.10
+        ipv4_address: 10.10.20.10
 
   php-fpm:
-    container_name: zendphp-compose
-    image: zendphp-jumpstart/fpm-compose
+    container_name: zendphp-hq
+    image: zendphp-jumpstart/fpm-hq
     build:
       context: .
       dockerfile: Dockerfile.FPM
@@ -35,11 +35,27 @@ services:
     working_dir: /var/www/html
     networks:
       httpd_net:
-        ipv4_address: 10.10.10.20
+        ipv4_address: 10.10.20.20
+
+  zend-hq:
+    container_name: zendhq-hq
+    image: zendphp-jumpstart/zendhq-hq
+    build:
+      context: .
+      dockerfile: Dockerfile.ZendHQ
+    ports:
+      - "10090:10090"
+      - "10091:10091"
+    volumes:
+     - "./license/zend-hq-testing-license:/opt/zend/zendphp/etc/license"
+     - ./:/home
+    networks:
+      httpd_net:
+        ipv4_address: 10.10.20.30
 
 networks:
   httpd_net:
     ipam:
       driver: default
       config:
-        - subnet: "10.10.10.0/24"
+        - subnet: "10.10.20.0/24"

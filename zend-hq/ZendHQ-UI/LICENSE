@@ -1,0 +1,8 @@
+Licenses
+
+ZendHQ User Interface application contains binaries built using neutralino.js
+tools. See: https://neutralino.js.org/
+Neutralinojs core is licensed as MIT. See attached LICENSE.neutralinojs
+
+
+Application part of this software is (c) Zend by Perforce 2022.
