@@ -63,14 +63,16 @@ function find_city( array &$resp,
                     string $city,
                     string $state = '')
 {
+    // check to see if city is present in $row
+    if (empty($row[2])) return FALSE;
     $ok = FALSE;
     if (empty($state)) {
         $ok = TRUE;
     } else {
         $name = $row[3] ?? '';
         $code = $row[4] ?? '';
-        if (trim($row[3]) === $state) $ok = TRUE;
-        if (trim($row[4]) === $state) $ok = TRUE;
+        if ($name === $state) $ok = TRUE;
+        if ($code === $state) $ok = TRUE;
     }
     if ($ok && stripos($row[2], $city) !== FALSE) {
         if (count($row) === 12) {

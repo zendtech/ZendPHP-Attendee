@@ -3,8 +3,7 @@
 
 *** Usage ***********************************************
 
-WEB: http://10.10.10.10/index.php?city=Xyz&state=ZZ
-CLI: php lookup.php [CITY] [STATE]
+php random.php [MAX] [SLEEP]
 
 *** Source: https://download.geonames.org/export/zip/ ***
 
@@ -51,53 +50,52 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 define('DATA_FILE', __DIR__ . '/US_Post_Codes.txt');
-define('FMT_STRING', '%2s|%11s|%30s|%12s|%2s|%12s|%3s|%12s|%3s|%10s|%10s|%2s');
 define('HEADERS', ['ISO2','PostCode','City','State','Code','Name2','Code2','Name3','Code3','Latitude','Longitude','Accuracy']);
-$usage = [
-    'WEB' => 'http://10.10.nn.mm/index.php?city=Xyz&state=ZZ',
-    'CLI' => 'php lookup.php [CITY] [STATE]',
-];
-
-function find_city( array &$resp,
-                    array $row,
-                    string $city,
-                    string $state = '')
-{
-    // check to see if city is present in $row
-    if (empty($row[2])) return FALSE;
-    $ok = FALSE;
-    if (empty($state)) {
-        $ok = TRUE;
-    } else {
-        $name = $row[3] ?? '';
-        $code = $row[4] ?? '';
-        if ($name === $state) $ok = TRUE;
-        if ($code === $state) $ok = TRUE;
-    }
-    if ($ok && stripos($row[2], $city) !== FALSE) {
-        if (count($row) === 12) {
-            $resp['found']++;
-            $resp['data'][$row[1]] = array_combine(HEADERS, $row);
+define('URL', 'http://10.10.20.10/index.php');
+define('DEFAULT_MAX', 99);
+define('DEFAULT_SLEEP', 5);
+// how many times?
+$max = $argv[1] ?? DEFAULT_MAX;
+$sleep = $argv[2] ?? DEFAULT_SLEEP;
+// grab list of cities
+$data  = new SplFileObject(DATA_FILE);
+$list  = [];
+$hdr_cnt = count(HEADERS);
+while (!$data->eof()) {
+    $row = $data->fgetcsv("\t");
+    if (empty($row)) continue;
+    if (count($row) === $hdr_cnt) {
+        array_combine(HEADERS, $row);
+        $city = $row['City'] ?? 'None';
+        $state = $row['State'] ?? 'None';
+        $key = $state . '_' . $city;
+        if (!array_key_exists($key, $list)) {
+            $list[$key] = $row;
         }
     }
 }
-$resp['found'] = 0;
-$city  = $_REQUEST['city'] ?? $argv[1] ?? '';
-$state = $_REQUEST['state'] ?? $argv[2] ?? '';
-$city  = trim(strip_tags($city));
-$state = trim(strip_tags($state));
-if (empty($city)) {
-    $resp['found'] = 0;
-    $resp['data']['Usage'] = $usage;
-} else {
-    $data  = new SplFileObject(DATA_FILE);
-    while (!$data->eof()) {
-        $row = $data->fgetcsv("\t");
-        if (empty($row)) continue;
-        find_city($resp, $row, $city, $state);
-    }
+// build JS list to test website
+
+for ($x = 0; $x < $max; $x++) {
+    $key = array_rand($list);
+    [$state,$city] = explode('_', $key);
+    $url = sprintf('%s?city=%s&state=%s', URL, $city, $state);
 }
-if (!empty($_REQUEST)) echo '<pre>';
-echo json_encode($resp, JSON_PRETTY_PRINT);
-if (!empty($_REQUEST)) echo '</pre>';
-echo PHP_EOL;
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ZendHQ Test</title>
+<meta name="generator" content="Geany 1.36" />
+</head>
+<body>
+<h1>ZendHQ Test</h1>
+<hr />
+<b>Testing:</b><p id="city"></p>
+<p id="result"></p>
+<script>
+var list = <?php json_encode($url); ?>
+</script>
+</body>
+</html>

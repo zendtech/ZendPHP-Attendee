@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile.Nginx
     volumes:
-     - ./:/home
+     - ./html:/var/www/html
     working_dir: /var/www/html
     networks:
       httpd_net:
@@ -31,7 +31,7 @@ services:
       timeout: 2s
       retries: 2
     volumes:
-     - ./:/home
+     - ./html:/var/www/html
     working_dir: /var/www/html
     networks:
       httpd_net:
