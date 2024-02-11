@@ -12,9 +12,13 @@
 */
 
 // grab CLI params
-$country  = $argv[1] ?? 'US';
-$db_name  = $argv[2] ?? 'training.db';
+$country  = $argv[1] ?? $_GET['country'] ?? 'US';
+$db_name  = $argv[2] ?? $_GET['db_fname'] ?? 'training.db';
 $append   = isset($argv[3]);
+
+// sanitize
+$country = strtoupper(trim(strip_tags(substr($country,0,2))));
+$db_name = trim(strip_tags($db_name));
 
 // init vars
 $geo      = [];
@@ -22,13 +26,13 @@ $exp      = NULL;
 $success  = FALSE;
 $expected = 0;
 $actual   = 0;
+$blkSize  = 16384;
 $txtFile  = __DIR__ . '/' . $country . '.txt';
 $dbFile   = __DIR__ . '/' . $db_name;
-$expFile  = __DIR__ . '/exceptions.csv';
+$geoNames = 'https://download.geonames.org/export/zip/';
 
 // fields
 $fields = [
-    'id' => 'INTEGER PRIMARY KEY AUTOINCREMENT',
     'country_code' => 'TEXT NOT NULL',
     'postal_code' => 'TEXT NOT NULL UNIQUE',
     'city_name' => 'TEXT NOT NULL',
@@ -47,13 +51,25 @@ $fields = [
 echo "\n<pre>\n";
 echo "\nProcessing " . basename(__FILE__) . "\n";
 try {
+    // download source file
+    if (!file_exists($txtFile)) [
+        $geo = new SplFileObject($txtFile, 'w');
+        $src = new SplFileObject($geoNames . $country . '.zip', 'r');
+        while(!$src->eof()) {
+            $geo->fwrite($src->fread($blkSize));
+        }
+        unset($geo);
+        echo shell_exec('unzip ' . $country . '.zip -o ' . $country . '.txt');
+        echo PHP_EOL;
+    }
+    $geo = new SplFileObject($txtFile, 'r');
     // set up PDO
     $pdo = new PDO('sqlite://' . $dbFile);
-    $geo = new SplFileObject($txtFile, 'r');
     // create `postcodes` table if --append not set
     if (!$append) {
         $sql = 'DROP TABLE IF EXISTS postcodes;' . PHP_EOL;
         $sql .= 'CREATE TABLE postcodes (' . PHP_EOL;
+        $sql .= '    id INTEGER PRIMARY KEY AUTOINCREMENT,' . PHP_EOL;
         foreach ($fields as $name => $type) {
             $sql .= '    ' . $name . ' ' . $type . ',' . PHP_EOL;
         }
@@ -62,7 +78,7 @@ try {
         echo $sql . PHP_EOL;
         $pdo->exec($sql);
     }
-    $hdr_count = count($fields) - 1;
+    $hdr_count = count($fields);
     // build insert
     $sql = 'INSERT INTO postcodes (';
     foreach ($fields as $key => $value) {
@@ -75,7 +91,6 @@ try {
           . ');';
     echo $sql . PHP_EOL;
     $stmt = $pdo->prepare($sql);
-    $geo = new SplFileObject($txtFile, 'r');
     while ($row = $geo->fgetcsv("\t")) {
         echo 'Processing: ' . ($row[2] ?? '') . "\n";
         $expected++;
