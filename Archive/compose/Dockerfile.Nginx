@@ -1,0 +1,20 @@
+FROM nginx:latest
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get -y update && \
+    apt-get -y upgrade && \
+    apt-get -y clean && \
+    apt-get install -y netcat && \
+    rm -rf /tmp/* /var/lib/apt/lists/*
+
+RUN mkdir -p /var/www && \
+    mkdir -p /var/www/html && \
+    chown -R nginx:nginx /var/www
+
+COPY ./data/conf/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./data/scripts/wait-for.sh /usr/bin/wait-for
+COPY ./data/scripts/wait-for-php-fpm.sh /docker-entrypoint.d/99-wait-for-php-fpm.sh
+COPY ./html/* /var/www/html/
+RUN chmod +x /usr/bin/wait-for && \
+    chmod +x /docker-entrypoint.d/99-wait-for-php-fpm.sh

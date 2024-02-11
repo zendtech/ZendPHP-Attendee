@@ -1,0 +1,26 @@
+version: '3.3'
+
+services:
+
+  zendphp:
+    container_name: zendphp
+    image: phptraining/zendphp
+    build:
+      context: .
+      dockerfile: Dockerfile.ZENDPHP
+    volumes:
+     - ./data:/var/lib/data
+     - ./html:/var/www/html
+     - ./shared:/home/training
+    restart: always
+    working_dir: /home/training
+    networks:
+      httpd_net:
+        ipv4_address: 10.10.60.10
+
+networks:
+  httpd_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.60.0/24"

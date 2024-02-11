@@ -1,0 +1,45 @@
+version: '3.7'
+
+services:
+
+  web-server:
+    container_name: ws-compose
+    image: zendphp-jumpstart/nginx-compose
+    build:
+      context: .
+      dockerfile: Dockerfile.Nginx
+    volumes:
+     - ./:/home
+    working_dir: /var/www/html
+    networks:
+      httpd_net:
+        ipv4_address: 10.10.10.10
+
+  php-fpm:
+    container_name: zendphp-compose
+    image: zendphp-jumpstart/fpm-compose
+    build:
+      context: .
+      dockerfile: Dockerfile.FPM
+      args:
+        TIMEZONE: 'Europe/London'
+        ZENDPHP_VERSION: 8.1
+        ZEND_EXTENSIONS_LIST: 'openssl mbstring gd'
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/local/bin/fpm-healthcheck.sh"]
+      interval: 10s
+      timeout: 2s
+      retries: 2
+    volumes:
+     - ./:/home
+    working_dir: /var/www/html
+    networks:
+      httpd_net:
+        ipv4_address: 10.10.10.20
+
+networks:
+  httpd_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.10.0/24"

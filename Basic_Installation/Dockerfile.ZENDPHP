@@ -1,0 +1,26 @@
+FROM alpine:latest
+COPY startup.zendphp.sh /tmp/startup.sh
+COPY secrets.sh /tmp/secrets.sh
+RUN chmod +x /tmp/*.sh
+RUN \
+    echo "Installing basic utils ..." && \
+    apk add bash && \
+    apk add wget && \
+    apk add curl && \
+    apk add nano
+RUN \
+    echo "Installing nginx ..." && \
+    apk add nginx
+RUN \
+    echo "Installing SQLite ..." && \
+    apk add sqlite && \
+    . /tmp/secrets.sh && \
+    addgroup $DB_GRP
+RUN \
+    echo "Installing Adminer (db admin script) ..." && \
+    . /tmp/secrets.sh && \
+    cd /tmp && \
+    wget https://github.com/vrana/adminer/releases/download/v$ADMINER_VER/adminer-$ADMINER_VER.php && \
+    mv /tmp/adminer-$ADMINER_VER.php /var/www/adminer.php
+
+ENTRYPOINT /tmp/startup.sh

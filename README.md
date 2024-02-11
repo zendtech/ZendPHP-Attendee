@@ -1,6 +1,37 @@
-# ZendPHP JumpStart -- Attendee Files
+# ZendPHP-ZendHQ JumpStart -- Attendee Files
 
-## Ubuntu Installation Notes
+## Running the Course Docker Contaier
+You can use these instructions if you want to build and run the ZendPHP Docker image
+
+### Linux Instructions
+Install Docker CE (also called "Docker Engine"):
+* CentOS: https://docs.docker.com/engine/install/centos/
+* Debian: https://docs.docker.com/engine/install/debian/
+* Fedora: https://docs.docker.com/engine/install/fedora/
+* Ubuntu: https://docs.docker.com/engine/install/ubuntu/
+* Others: https://docs.docker.com/engine/install/
+Install Docker Compose:
+* https://docs.docker.com/compose/install/standalone/
+
+
+### Windows Instructions
+Install Docker Desktop for Windows:
+* https://docs.docker.com/desktop/install/windows-install/
+  * Already includes Docker Compose
+
+### Mac Instructions
+Install Docker Desktop for Mac:
+* https://docs.docker.com/desktop/install/mac-install/
+  * Already includes Docker Compose
+  * Note that there are two installers
+    * One is for "Apple Silicon"
+    * The other is for Mac with the Intel chip
+
+
+## Install ZendPHP Directly on Your Computer
+You can use these instructions if you want to install ZendPHP directly on your computer
+
+### Ubuntu Installation Notes
 When adding the correct `apt` sources repo:
 * Look here: http://repos.zend.com/zendphp/
 Example:
@@ -14,13 +45,13 @@ To get a list of package names, browse:
 
 Example PHP packages:
 * php7.4-zend
-* php8.1-zend
+* php8.2-zend
 
-## Docker Image Notes
-Pull a PHP 8.1 image with an Ubuntu base:
+### Docker Image Notes
+Pull a PHP 8.2 image with an Ubuntu base:
 * From a command prompt
 ```
-docker pull cr.zend.com/zendphp/8.1:ubuntu-20.04-cli
+docker pull cr.zend.com/zendphp/8.2:ubuntu-22.04-cli
 ```
 
 Built-in PHP webserver demo:
@@ -31,21 +62,21 @@ docker run -v `pwd`:/home --network host -it 74ca5659fe61 -S localhost:8888 -t /
 ```
 * From browser: http://localhost:8888
 
-## CentOS Notes
+### CentOS Notes
 To get a list of package names, browse:
 * `http://repos.zend.com/zendphp/rpm_centosN`
 * Where `N` could be 6, 7 or 8
 
 Example PHP packages:
 * php74zend
-* php81zend
+* php82zend
 
 Save time on installation by adding the `-y` option:
 ```
 sudo yum install -y php{PHP_VERSION}zend
 ```
 
-## nginx / php-fpm Notes
+### nginx / php-fpm Notes
 nginx conf:
 * Add this to /etc/nginx/nginx.conf:
 ```
@@ -72,11 +103,11 @@ firewall-cmd --zone=public --permanent --add-service=https
 firewall-cmd --reload
 ```
 
-## Windows Notes
-Installing PHP 8.1 with all extensions enabled except for pdo_oci, pdo_pgsql, pgsql and oci8:
+### Windows Notes
+Installing PHP 8.2 with all extensions enabled except for pdo_oci, pdo_pgsql, pgsql and oci8:
 * From a PowerShell prompt:
 ```
-PS C:\Users\ACER\ZendPHP> .\zendphp_install.ps1 install 8.1 \
+PS C:\Users\ACER\ZendPHP> .\zendphp_install.ps1 install 8.2 \
     -enable-all \
     -with-deps mibs \
     -set-system-path \
@@ -84,18 +115,18 @@ PS C:\Users\ACER\ZendPHP> .\zendphp_install.ps1 install 8.1 \
 ```
 * Output:
 ```
-Installing ZendPHP 8.1 to: C:\zendphp\8.1
-Installing from https://repos.zend.com/zendphp/windows/latest                                                                                        Skipping mibs installation; already installed in c:\usr\share\snmp\mibs                                                                              Installing ZendPHP 8.1                                                                                                                               Downloading from https://repos.zend.com/zendphp/windows/latest/zendphp-8.1-latest-nts-Win32-vs16-x64.zip to zendphp-8.1-latest-nts-Win32-vs16-x64.zipSetting system path
+Installing ZendPHP 8.2 to: C:\zendphp\8.2
+Installing from https://repos.zend.com/zendphp/windows/latest                                                                                        Skipping mibs installation; already installed in c:\usr\share\snmp\mibs                                                                              Installing ZendPHP 8.2                                                                                                                               Downloading from https://repos.zend.com/zendphp/windows/latest/zendphp-8.2-latest-nts-Win32-vs16-x64.zip to zendphp-8.2-latest-nts-Win32-vs16-x64.zipSetting system path
 Path has already been set; skipping
-Configuring ZendPHP 8.1 in C:\zendphp\8.1
+Configuring ZendPHP 8.2 in C:\zendphp\8.2
 ```
 * Testing the version:
 ```
 PS C:\Users\ACER\ZendPHP> php --version
-PHP 8.1.3 (cli) (built: Feb 18 2022 09:06:10) (NTS Visual C++ 2019 x64)
+PHP 8.2.3 (cli) (built: Feb 18 2022 09:06:10) (NTS Visual C++ 2019 x64)
 Copyright (c) The PHP Group
 Zend Engine v4.1.3, Copyright (c) Zend Technologies
-    with Zend OPcache v8.1.3, Copyright (c), by Zend Technologies
+    with Zend OPcache v8.2.3, Copyright (c), by Zend Technologies
 PS C:\Users\ACER\ZendPHP>
 ```
 
@@ -130,12 +161,10 @@ Options:
   -with-deps <list>         : install additional dependencies; separator is comma. (see dependency libraries list below)
 
 Valid PHP versions are:
-  - 7.1
-  - 7.2
-  - 7.3
   - 7.4
   - 8.0
-  - 8.1
+  - 8.2
+  - 8.2
 
 Valid internal extensions (-enable, -disable) are:
   - bz2
@@ -202,12 +231,12 @@ Dependency libraries (-with-deps) this installer can install:
 Other Examples
 * Full install:
 ```
-zendphp_install.ps1 install 8.1 -enable-all -with-deps mibs -set-system-path
+zendphp_install.ps1 install 8.2 -enable-all -with-deps mibs -set-system-path
 ```
 
 * Disable bz2 and xdebug after install:
 ```
-zendphp_install.ps1 config 8.1 -disable bz2,xdebug
+zendphp_install.ps1 config 8.2 -disable bz2,xdebug
 ```
 
 * Enable `gd` in a custom install directory:
