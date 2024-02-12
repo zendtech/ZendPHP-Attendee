@@ -21,6 +21,5 @@ RUN \
     . /tmp/secrets.sh && \
     cd /tmp && \
     wget https://github.com/vrana/adminer/releases/download/v$ADMINER_VER/adminer-$ADMINER_VER.php && \
-    mv /tmp/adminer-$ADMINER_VER.php /var/www/adminer.php
-
+    mv /tmp/adminer-$ADMINER_VER.php /tmp/adminer.php
 ENTRYPOINT /tmp/startup.sh

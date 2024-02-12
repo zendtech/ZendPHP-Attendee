@@ -50,7 +50,7 @@ class Postcode
      *
      * @return PDOStatement | false if problem
      */
-    public function getPreparedInsert() PDOStatement|false
+    public function getPreparedInsert() : PDOStatement|false
     {
         $hdr_count = count($this->fields);
         $sql = 'INSERT INTO postcodes (';
@@ -62,6 +62,6 @@ class Postcode
         $sql .= ') VALUES ('
               . substr(str_repeat('?,', $hdr_count), 0, -1)
               . ');';
-        return $pdo->prepare($sql);
+        return $this->pdo->prepare($sql);
     }
 }

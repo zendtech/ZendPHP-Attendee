@@ -34,8 +34,11 @@ class ConfigProvider
             ],
             'factories'  => [
                 Handler\HomePageHandler::class => Handler\HomePageHandlerFactory::class,
+                Handler\AdminerHandler::class => Handler\AdminerHandlerFactory::class,
+                Connection::class => function (ContainerInterface $container) {
+                    return new Connection(); },
                 Postcode::class => function (ContainerInterface $container) {
-                    return new PostCode(Connection::getConnection()); },
+                    return new Postcode($container->get(Connection::class)()); },
             ],
         ];
     }

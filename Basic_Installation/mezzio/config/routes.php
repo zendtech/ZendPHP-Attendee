@@ -42,4 +42,5 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->get('/api/ping', App\Handler\PingHandler::class, 'api.ping');
     $app->get('/api/build', Postcode\BuildHandler::class, 'api.build');
     $app->get('/api/query', Postcode\QueryHandler::class, 'api.query');
+    $app->get('/api/adminer', App\Handler\AdminerHandler::class, 'api.adminer');
 };

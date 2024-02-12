@@ -22,5 +22,8 @@ return [
         'factories' => [
             // Fully\Qualified\ClassName::class => Fully\Qualified\FactoryName::class,
         ],
+        'services' => [
+            'data_dir' => __DIR__ . '/../../data/',
+        ],
     ],
 ];

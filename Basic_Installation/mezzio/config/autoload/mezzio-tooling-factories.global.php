@@ -13,6 +13,7 @@ declare(strict_types=1);
 return [
     'dependencies' => [
         'factories' => [
+            App\AdminerHandler::class => App\AdminerHandlerFactory::class,
             Postcode\BuildHandler::class => Postcode\BuildHandlerFactory::class,
             Postcode\QueryHandler::class => Postcode\QueryHandlerFactory::class,
         ],
