@@ -2,6 +2,15 @@
 
 Use this set of containers to practice installing ZendPHP and ZendHQ
 
+## Install the sample application
+* Open a terminal window and change to this directory (e.g. `/path/to/repo/Basic_Installation`)
+* Change to the `mezzio` directory
+* Install the app using composer
+```
+php composer.phar self-update
+php composer.phar install
+```
+
 ## Build the Images
 * Make sure you have Docker Desktop or Docker CE + Docker Compose installed (see `/path/to/repo/README.md`)
 * Open a terminal window and change to this directory (e.g. `/path/to/repo/Basic_Installation`)

@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile.ZENDPHP
     volumes:
      - ./data:/var/lib/data
-     - ./html:/var/www/html
+     - ./mezzio:/var/www/mezzio
      - ./shared:/home/training
     restart: always
     working_dir: /home/training

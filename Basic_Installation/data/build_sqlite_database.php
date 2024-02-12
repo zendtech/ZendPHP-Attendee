@@ -1,5 +1,6 @@
 <?php
-// USAGE: php build_sqlite_database.php ISO2_CODE DB_FILENAME [--append]
+// CLI USAGE: php build_sqlite_database.php ISO2_CODE DB_FILENAME [--append]
+// Web Usaage: /build_sqlite_database.php?country=ISO2_CODE&dbf=DB_FILENAME&append=1
 /**
  * Updates the `zipcodes` table from geonames.org data
  *
@@ -11,10 +12,10 @@
  *
 */
 
-// grab CLI params
+// grab CLI/Web params
 $country  = $argv[1] ?? $_GET['country'] ?? 'US';
-$db_name  = $argv[2] ?? $_GET['db_fname'] ?? 'training.db';
-$append   = isset($argv[3]);
+$db_name  = $argv[2] ?? $_GET['dbf'] ?? 'training.db';
+$append   = isset($argv[3]) || isset($_GET['append']);
 
 // sanitize
 $country = strtoupper(trim(strip_tags(substr($country,0,2))));
@@ -106,7 +107,7 @@ echo ($expected == $actual) ? 'SUCCESS' : 'FAILED';
 echo "\nExpected:\t$expected\n";
 echo "Actual    :\t$actual\n";
 
-// close files
+// close db connection and files
 unset($pdo);
 unset($geo);
 
