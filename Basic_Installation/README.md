@@ -2,15 +2,6 @@
 
 Use this set of containers to practice installing ZendPHP and ZendHQ
 
-## Install the sample application
-* Open a terminal window and change to this directory (e.g. `/path/to/repo/Basic_Installation`)
-* Change to the `mezzio` directory
-* Install the app using composer
-```
-php composer.phar self-update
-php composer.phar install
-```
-
 ## Build the Images
 * Make sure you have Docker Desktop or Docker CE + Docker Compose installed (see `/path/to/repo/README.md`)
 * Open a terminal window and change to this directory (e.g. `/path/to/repo/Basic_Installation`)
@@ -51,12 +42,12 @@ mv ./zendphpctl /usr/sbin
   * [https://help.zend.com/zendphp/current/content/installation/zendphp_alpinelinux.htm](https://help.zend.com/zendphp/current/content/installation/zendphp_alpinelinux.htm)
   * Change `PHP_VER` to the desired PHP version (e.g. `8.3`)
 ```
-# echo "https://repos.zend.com/zendphp/apk_alpine318/" >> /etc/apk/repositories
-# wget https://repos.zend.com/zendphp/apk_alpine318/zendphp-alpine-devel.rsa.pub -O /etc/apk/keys/zendphp-alpine-devel.rsa.pub
-# apk update
-# export PHP_VER=8.2
-# zendphpctl repo install
-# zendphpctl php install $PHP_VER
+echo "https://repos.zend.com/zendphp/apk_alpine318/" >> /etc/apk/repositories
+wget https://repos.zend.com/zendphp/apk_alpine318/zendphp-alpine-devel.rsa.pub -O /etc/apk/keys/zendphp-alpine-devel.rsa.pub
+apk update
+export PHP_VER=8.2
+zendphpctl repo install
+zendphpctl php install $PHP_VER
 ```
   * Test for success:
 ```
@@ -73,21 +64,19 @@ php -m
 ## Install PHP-FPM
 * Check if FPM support is installed (fpm is-installed)
 ```
-# zendphpctl fpm is-installed
-Checking if FPM is installed for PHP 8.2...
-FPM IS NOT installed for version 8.2
+zendphpctl fpm is-installed
 ```
 * Install PHP-FPM for the default version
 ```
-# zendphpctl fpm install
-Installing FPM for PHP version 8.2
-...
+zendphpctl fpm install
 ```
 * Configure PHP-FPM support
+  * For now just review the configuration
+  * Use the defaults for the lab
+  * Use `CTL+X` to save and exit
 ```
-# export EDITOR=/usr/bin/nano
-# zendphpctl fpm config
-Using PHP version 8.2
+export EDITOR=/usr/bin/nano
+zendphpctl fpm config
 ```
 * Start PHP-FPM
   * Substitute the PHP version in place of `PHP_VER_ALPINE`
@@ -95,5 +84,56 @@ Using PHP version 8.2
   * Example: PHP 8.2 would be "82"
 ```
 export PHP_VER_ALPINE=82
-/usr/sbin/php-fpm82$PHP_VER_ALPINE
+/usr/sbin/php-fpm"$PHP_VER_ALPINE"zend
 ```
+* Confirm PHP-FPM is running
+```
+ps
+```
+## Configure nginx for the application and PHP-FPM
+Open or create a file `/etc/nginx/http.d/default.conf`
+```
+nano /etc/nginx/http.d/default.conf
+```
+* Paste in the following contents:
+```
+server {
+    listen                  80;
+    root                    /var/www/html;
+    index                   index.php;
+    server_name             _;
+    client_max_body_size    32m;
+    error_page              500 502 503 504  /50x.html;
+    location = /50x.html {
+          root              /var/lib/nginx/html;
+    }
+    location ~ \.php$ {
+          fastcgi_pass      127.0.0.1:9000;
+          fastcgi_index     index.php;
+          include           fastcgi.conf;
+    }
+}
+```
+* Restart nginx
+```
+/usr/sbin/nginx -s reload
+```
+## Install a test PHP application
+* Open a terminal window and change to this directory (e.g. `/home/training`)
+* Change to the `/var/www/html` directory
+* Create the sample PHP app:
+```
+nano /var/www/html/test.php
+```
+* Add these contents and save:
+```
+<?php
+phpinfo();
+```
+* Test the application from your browser:
+  * http://10.10.60.10/
+  * or:
+  * http://localhost:8888
+
+## Install ZendHQ
+

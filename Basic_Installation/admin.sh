@@ -1,5 +1,5 @@
 #!/bin/bash
-. ./secrets.sh
+. ./docker/secrets.sh
 DIR=`pwd`
 export USAGE="Usage: admin.sh up|down|build|shell|ip|ls [--show]"
 if [[ -z "$1" ]]; then

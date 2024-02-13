@@ -13,9 +13,10 @@ fi
 echo "Started nginx succesfully"
 
 # assign add zendphp user to db_users group & assign rights
-chgrp -R $DB_GRP $DB_DIR
+chown -R $PHP_USER:$NGINX_GRP $APP_DIR
+chown -R $PHP_USER:$NGINX_GRP $DB_DIR
+chmod -R 775 $APP_DIR
 chmod -R 775 $DB_DIR
-addgroup zendphp $DB_GRP
 
 while sleep 60; do
   ps |grep nginx |grep -v grep

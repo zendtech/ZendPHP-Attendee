@@ -6,12 +6,14 @@ services:
     container_name: zendphp
     image: phptraining/zendphp
     build:
-      context: .
+      context: ./docker
       dockerfile: Dockerfile.ZENDPHP
+    ports:
+     - "8888:80"
     volumes:
      - ./data:/var/lib/data
      - ./mezzio:/var/www/mezzio
-     - ./shared:/home/training
+     - .:/home/training
     restart: always
     working_dir: /home/training
     networks:
