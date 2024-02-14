@@ -1,2 +1,0 @@
-#!/usr/bin/execlineb -P
-/etc/init.d/php8.1-zend-fpm

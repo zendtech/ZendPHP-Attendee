@@ -136,4 +136,68 @@ phpinfo();
   * http://localhost:8888
 
 ## Install ZendHQ
+* Review the instructions here:
+  * [https://help.zend.com/zendphp/current/content/installation/zendhq_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_installation.htm)
+* If not already done, install the Zend repo:
+```
+zendphpctl repo install
+```
+### Install the ZendHQ daemon
+This is installed on the server running ZendHQ
+```
+apk add zendhqd
+```
+### Install the ZendHQ PHP Extension
+NOTE: the ZendHQ extension needs to be installed on any PHP installation you wish to monitor
+* In the case of the lab, install the
+ZendHQ PHP extension in the same Docker container
+```
+zendphpctl ext install zendhq
+```
+* Confirm that extension is installed:
+```
+php -m
+```
+* Review the configuration. Make changes as desired.
+```
+nano /etc/php/82zend/conf.d/10_zendhq.ini
+```
+* Restart PHP-FPM
+  * NOTE: on Debian/Ubuntu or RHEL/Fedora/CentOS systems PHP-FPM will be running under a run service
+  * For Alpine Linux you need to kill the master process and restart it
+  * Assign the correct PHP version number to `PHP_VER`
+    * For Alpine Linux the version numbering does not have a period (".")
+```
+export PHP_VER=82
+```
+  * Find the process ID (`PID`) for the PHP-FPM master process:
+```
+ps |grep php-fpm
+```
+  * Kill the process
+    * Substitute the PID number in place of "PID":
+```
+kill PID
+```
+  * Restart PHP-FPM
+```
+/usr/sbin/php-fpm"$PHP_VER_ALPINE"zend
+```
+  * Confirm the process is running
+```
+ps |grep php-fpm
+```
+### Install the ZendHQ GUI
+The ZendHQ user interface runs separately from the web server
+* The downloads are located here:
+  * [https://downloads.zend.com/zendphp/zendhq-ui/](https://downloads.zend.com/zendphp/zendhq-ui/)
+* Grab the compressed download files
+```
+cd /home/training
+wget https://downloads.zend.com/zendphp/zendhq-ui/zendhq-ui-linux-release.tar.gz
+```
+* Extract them
+```
+tar -xvf ./zendhq-ui-linux-release.tar.gz
+```
 

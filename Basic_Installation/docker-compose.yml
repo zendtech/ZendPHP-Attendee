@@ -17,11 +17,11 @@ services:
     restart: always
     working_dir: /home/training
     networks:
-      httpd_net:
+      zendphp_net:
         ipv4_address: 10.10.60.10
 
 networks:
-  httpd_net:
+  zendphp_net:
     ipam:
       driver: default
       config:

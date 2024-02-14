@@ -13,9 +13,7 @@ RUN \
     apk add nginx
 RUN \
     echo "Installing SQLite ..." && \
-    apk add sqlite && \
-    . /tmp/secrets.sh && \
-    addgroup $DB_GRP
+    apk add sqlite
 RUN \
     echo "Installing Adminer (db admin script) ..." && \
     . /tmp/secrets.sh && \
