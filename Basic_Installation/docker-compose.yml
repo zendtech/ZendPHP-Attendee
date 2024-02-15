@@ -10,6 +10,7 @@ services:
       dockerfile: Dockerfile.ZENDPHP
     ports:
      - "8888:80"
+     - "10091:10091"
     volumes:
      - ./data:/var/lib/data
      - ./mezzio:/var/www/mezzio

@@ -20,27 +20,27 @@ Follow these instructions to install ZendPHP from a terminal window in this dire
 ```
 docker exec -it zendphp /bin/bash
 ```
-* Read through these instructions to get an overview of the installation:
+Read through these instructions to get an overview of the installation:
   * [https://help.zend.com/zendphp/current/content/installation/zendphpctl.htm](https://help.zend.com/zendphp/current/content/installation/zendphpctl.htm)
-* Install `zendphpctl`
-    * Download the zendphpctl script and its signature from our repository:
+Install `zendphpctl`
+  * Download the zendphpctl script and its signature from our repository:
 ```
 curl -L https://repos.zend.com/zendphp/zendphpctl -o zendphpctl
 curl -L https://repos.zend.com/zendphp/zendphpctl.sig -o zendphpctl.sig
 ```
-    * Validate the signature:
+Validate the signature:
 ```
 echo "$(cat zendphpctl.sig) zendphpctl" | sha256sum -c
 ```
-    * If the signature is valid, remove the signature file, set permissions for the script, and move it into the path for the root user:
+If the signature is valid, remove the signature file, set permissions for the script, and move it into the path for the root user:
 ```
 rm zendphpctl.sig
 chmod +x zendphpctl
 mv ./zendphpctl /usr/sbin
 ```
-* Follow the instructions here in the "Installation using Zendphpctl":
-  * [https://help.zend.com/zendphp/current/content/installation/zendphp_alpinelinux.htm](https://help.zend.com/zendphp/current/content/installation/zendphp_alpinelinux.htm)
-  * Change `PHP_VER` to the desired PHP version (e.g. `8.3`)
+Follow the instructions here in the "Installation using Zendphpctl":
+* [https://help.zend.com/zendphp/current/content/installation/zendphp_alpinelinux.htm](https://help.zend.com/zendphp/current/content/installation/zendphp_alpinelinux.htm)
+* Change `PHP_VER` to the desired PHP version (e.g. `8.3`)
 ```
 echo "https://repos.zend.com/zendphp/apk_alpine318/" >> /etc/apk/repositories
 wget https://repos.zend.com/zendphp/apk_alpine318/zendphp-alpine-devel.rsa.pub -O /etc/apk/keys/zendphp-alpine-devel.rsa.pub
@@ -49,7 +49,7 @@ export PHP_VER=8.2
 zendphpctl repo install
 zendphpctl php install $PHP_VER
 ```
-  * Test for success:
+Test for success:
 ```
 # php -v
 PHP 8.2.15 (cli) (built: Jan 19 2024 08:29:07) (NTS)
@@ -57,36 +57,36 @@ Copyright (c) The PHP Group
 Zend Engine v4.2.15, Copyright (c) Zend Technologies
     with Zend OPcache v8.2.15, Copyright (c), by Zend Technologies
 ```
-  * Check for installed modules:
+Check for installed modules:
 ```
 php -m
 ```
 ## Install PHP-FPM
-* Check if FPM support is installed (fpm is-installed)
+Check if FPM support is installed (fpm is-installed)
 ```
 zendphpctl fpm is-installed
 ```
-* Install PHP-FPM for the default version
+Install PHP-FPM for the default version
 ```
 zendphpctl fpm install
 ```
-* Configure PHP-FPM support
-  * For now just review the configuration
-  * Use the defaults for the lab
-  * Use `CTL+X` to save and exit
+Configure PHP-FPM support
+* For now just review the configuration
+* Use the defaults for the lab
+* Use `CTL+X` to save and exit
 ```
 export EDITOR=/usr/bin/nano
 zendphpctl fpm config
 ```
-* Start PHP-FPM
-  * Substitute the PHP version in place of `PHP_VER_ALPINE`
-  * Note that with Alpine you *do not* put a period between the major and minor number
-  * Example: PHP 8.2 would be "82"
+Start PHP-FPM
+* Substitute the PHP version in place of `PHP_VER_ALPINE`
+* Note that with Alpine you *do not* put a period between the major and minor number
+* Example: PHP 8.2 would be "82"
 ```
 export PHP_VER_ALPINE=82
 /usr/sbin/php-fpm"$PHP_VER_ALPINE"zend
 ```
-* Confirm PHP-FPM is running
+Confirm PHP-FPM is running
 ```
 ps
 ```
@@ -95,7 +95,7 @@ Open or create a file `/etc/nginx/http.d/default.conf`
 ```
 nano /etc/nginx/http.d/default.conf
 ```
-* Paste in the following contents:
+Paste in the following contents:
 ```
 server {
     listen                  80;
@@ -114,30 +114,30 @@ server {
     }
 }
 ```
-* Restart nginx
+Restart nginx
 ```
 /usr/sbin/nginx -s reload
 ```
 ## Install a test PHP application
-* Open a terminal window and change to this directory (e.g. `/home/training`)
+Open a terminal window and change to this directory (e.g. `/home/training`)
 * Change to the `/var/www/html` directory
 * Create the sample PHP app:
 ```
 nano /var/www/html/test.php
 ```
-* Add these contents and save:
+Add these contents and save:
 ```
 <?php
 phpinfo();
 ```
-* Test the application from your browser:
-  * http://10.10.60.10/
-  * or:
-  * http://localhost:8888
+Test the application from your browser:
+* http://10.10.60.10/test.php
+* or:
+* http://localhost:8888/test.php
 
 ## Install ZendHQ
-* Review the instructions here:
-  * [https://help.zend.com/zendphp/current/content/installation/zendhq_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_installation.htm)
+Review the instructions here:
+* [https://help.zend.com/zendphp/current/content/installation/zendhq_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_installation.htm)
 * If not already done, install the Zend repo:
 ```
 zendphpctl repo install
@@ -154,50 +154,59 @@ ZendHQ PHP extension in the same Docker container
 ```
 zendphpctl ext install zendhq
 ```
-* Confirm that extension is installed:
+Confirm that extension is installed:
 ```
 php -m
 ```
-* Review the configuration. Make changes as desired.
+Review the configuration. Make changes as desired.
 ```
 nano /etc/php/82zend/conf.d/10_zendhq.ini
 ```
-* Restart PHP-FPM
-  * NOTE: on Debian/Ubuntu or RHEL/Fedora/CentOS systems PHP-FPM will be running under a run service
-  * For Alpine Linux you need to kill the master process and restart it
-  * Assign the correct PHP version number to `PHP_VER`
-    * For Alpine Linux the version numbering does not have a period (".")
+Restart PHP-FPM
+* NOTE: on Debian/Ubuntu or RHEL/Fedora/CentOS systems PHP-FPM will be running under a run service
+* For Alpine Linux you need to kill the master process and restart it
+* Assign the correct PHP version number to `PHP_VER`
+  * For Alpine Linux the version numbering does not have a period (".")
 ```
 export PHP_VER=82
 ```
-  * Find the process ID (`PID`) for the PHP-FPM master process:
+Find the process ID (`PID`) for the PHP-FPM master process:
 ```
 ps |grep php-fpm
 ```
-  * Kill the process
-    * Substitute the PID number in place of "PID":
+Kill the process
+* Substitute the PID number in place of "PID":
 ```
 kill PID
 ```
-  * Restart PHP-FPM
+Restart PHP-FPM
 ```
 /usr/sbin/php-fpm"$PHP_VER_ALPINE"zend
 ```
-  * Confirm the process is running
+Confirm the process is running
 ```
 ps |grep php-fpm
 ```
 ### Install the ZendHQ GUI
 The ZendHQ user interface runs separately from the web server
+* Install the GUI on your local computer (*not* inside the container!)
+Review the GUI instructions here:
+* [https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm)
 * The downloads are located here:
   * [https://downloads.zend.com/zendphp/zendhq-ui/](https://downloads.zend.com/zendphp/zendhq-ui/)
-* Grab the compressed download files
+* Grab the appropriate compressed download file
 ```
-cd /home/training
+# e.g. for Linux:
 wget https://downloads.zend.com/zendphp/zendhq-ui/zendhq-ui-linux-release.tar.gz
 ```
-* Extract them
+Extract them using your preferred archiving tool
 ```
+# e.g. for Linux:
 tar -xvf ./zendhq-ui-linux-release.tar.gz
 ```
-
+Run the binary
+* NOTE: there are different binaries for different CPU architectures
+```
+# e.g. for Linux on an Intel _x86 CPU:
+./
+```
