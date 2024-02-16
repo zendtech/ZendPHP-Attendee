@@ -2,27 +2,25 @@ version: '3.3'
 
 services:
 
-  zendphp:
-    container_name: zendphp
-    image: phptraining/zendphp
+  zendphp2:
+    container_name: zendphp2
+    image: phptraining/zendphp2
     build:
       context: ./docker
       dockerfile: Dockerfile.ZENDPHP
     ports:
      - "8888:80"
     volumes:
-     - ./data:/var/lib/data
-     - ./mezzio:/var/www/mezzio
      - .:/home/training
     restart: always
     working_dir: /home/training
     networks:
-      zendphp_net:
-        ipv4_address: 10.10.60.10
+      zendphp_net_2:
+        ipv4_address: 10.10.70.10
 
-  zendhq:
-    container_name: zendhq
-    image: phptraining/zendhq
+  zendhq2:
+    container_name: zendhq2
+    image: phptraining/zendhq2
     build:
       context: ./docker
       dockerfile: Dockerfile.ZENDHQ
@@ -33,12 +31,12 @@ services:
     restart: always
     working_dir: /home/training
     networks:
-      zendphp_net:
-        ipv4_address: 10.10.60.20
+      zendphp_net_2:
+        ipv4_address: 10.10.70.20
 
 networks:
-  zendphp_net:
+  zendphp_net_2:
     ipam:
       driver: default
       config:
-        - subnet: "10.10.60.0/24"
+        - subnet: "10.10.70.0/24"
