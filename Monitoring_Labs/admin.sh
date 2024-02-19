@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=`pwd`
-export USAGE="Usage: admin.sh up|down|build|shell|ls [zendphp2|zendhq2]"
+export USAGE="Usage: admin.sh up|down|build|shell|ls [zendhq_mon|zendphp_mon_1|zendphp_mon_2]"
 if [[ -z "$1" ]]; then
     echo $USAGE
     exit 1
@@ -17,6 +17,7 @@ elif [[ "$1" = "build" ]]; then
 elif [[ "$1" = "shell" ]]; then
     if [[ -z ${2} ]]; then
         echo "Unable to locate running container: $2"
+        docker container ls
     else
         docker exec -it $2 /bin/bash
     fi

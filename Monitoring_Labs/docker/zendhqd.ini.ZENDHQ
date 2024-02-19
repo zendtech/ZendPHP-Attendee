@@ -1,0 +1,459 @@
+################################################################################
+# ZendHQ Daemon configuration file.
+################################################################################
+
+################################################################################
+# Common configuration
+###
+
+###
+# Name of the log file
+# Logging will be completely disabled, if this directive is missing or empty.
+# Default value is empty = logging disabled.
+zendhqd.log_file = /proc/self/fd/2
+
+##
+# Name of the pid file.
+# If set, writes the pid value of the ZendHQ process into this file
+# Default value is empty = no pid file
+; zendhqd.pid_file = /opt/zend/zendphp/var/run/zendhqd.pid
+
+##
+# Daemonize the ZendHQ
+# If set to 1, then daemonizes the ZendHQ process
+# Default value is 0 = do not daemonize
+zendhqd.daemonize = 0
+
+###
+# Defines how verbose the log file is.
+#  -1 - only system messages
+#   0 - system and error messages
+#   1 - system, error, and warning messages
+#   2 - system, error, warning, and info messages
+#   3 - all above plus debug level 1 messages
+#   4 - all above plus debug level 2 messages
+#   5 - all above plus debug level 3 messages
+# Default value is 2 = system, error, warning, and info messages.
+; zendhqd.log_verbosity_level = 2
+
+###
+# Directory where the Z-Ray extension can store temporary files
+# The Z-Ray Daemon process shall have full access to that directory.
+# Default value is read from the TMPDIR environment variable.
+; zendhqd.tmp_dir = /tmp
+
+###
+# The user name or uid value under which the ZendHQ will run.
+# In order to use this directive, the ZendHQ shall be run initially as root.
+# If the ZendHQ is started as a non-root user, it will keep running as that
+# user.
+# The default value is -1 = no privileges are dropped for the ZendHQ process.
+; zendhqd.user = -1
+
+###
+# The group name or gid value under which the ZendHQ will run.
+# In order to use this directive, the ZendHQ shall be run initially as root.
+# If the ZendHQ is started as a non-root user, it will keep running as that
+# user.
+# The default value is -1 = no privileges are dropped for the ZendHQ process.
+; zendhqd.group = -1
+
+###
+# Directory where ZendHQ extensions are located.
+# The default value depends on the operating system.
+zendhqd.extensions_dir = /opt/zend/zendphp/lib
+
+
+################################################################################
+# Application configuration.
+#
+
+###
+# ZendHQ Session extension.
+# Implements client sessions and local role-based access control (RBAC) for ZendHQ
+# applications
+zendhqd.extension = zendhq_session
+
+###
+# Session timeout in seconds.
+# Drops disconnected sessions after the configured amount of seconds.
+# The default value is 600 seconds.
+zendhqd.session.timeout = 600
+
+###
+# Full path of the SQLITE database used for ZendHQ local RBAC.
+# The local RBAC database is used when no other RBAC modules are enabled.
+zendhqd.session.user_database_path = /opt/zend/zendphp/var/db/user.db
+
+###
+# Session authentication token hash (DEPRECATED!)
+# Client sessions are authenticated against the token hash and a new session is
+# created only if the token given by the client matches the configured token hash.
+# The default value matches the authentication token 'zendphp'.
+#
+# New installations should use RBAC and not set the hash value here. The directive
+# here is for backwards compatibility and used only if the `admin`
+# user does not have a hash value set in the RBAC database.
+# The directive is ignored when the hash value for the admin` value is set in the
+# RBAC database.
+;zendhqd.session.auth_token_hash = 8cb3000d2add8d41459625bc5a7a6139628b4d3d59ae512c549f87470d6b2481
+
+###
+# ZendHQ Config extension.
+# Implements configuration support for ZendHQ applications
+zendhqd.extension = zendhq_conf
+
+###
+# Full path of the SQLITE database used for ZendHQ Config values
+zendhqd.conf.database_path = /opt/zend/zendphp/var/db/conf.db
+
+###
+# ZeroMQ extension.
+# Implements the ZeroMQ connection for ZendPHP.
+zendhqd.extension = zendhq_zmq
+
+###
+# The uri of the ZeroMQ REQ/REP socket.
+# This value shall match with the z_ray.daemon_uri directive.
+# Default value is 'tcp://127.0.0.1:10090'.
+# On Unix systems an UNIX domain socket with appropriate permissions could be
+# used too.
+zendhqd.daemon_uri = tcp://0.0.0.0:10090
+
+###
+# The uri of the ZeroMQ PUB/SUB socket.
+# Default value is 'tcp://127.0.0.1:10092'
+zendhqd.daemon_pub_uri = tcp://0.0.0.0:10092
+
+###
+# Websocket extension.
+# Implements the websocket server interface for ZendHQ.
+zendhqd.extension = zendhq_ws
+
+# The websocket server interface [[<ip-address>|*]:]<port>.
+# Specifies the interface and port number where the websocket server is listening.
+# Default value is empty meaning that the websocket server is disabled.
+#
+# This directive can be given multiple times to listen on multiple interfaces or port numbers.
+#
+# Listen on all the interfaces and port number 10091. This is a dual stack any-address that makes the
+# websocket server to listen both IPv4 and IPv6 interfaces. 'netstat' on Linux systems may report that
+# the ZendHQ process is only listening on the 'tcp6' interface when this option is used.
+;zendhqd.websocket.interface = *:10091
+#
+# Listen on the IPv4 loopback address only and port number 10091
+zendhqd.websocket.interface = :10091
+#
+# Listen on the IPv6 loopback address only and port number 10091
+;zendhqd.websocket.interface = ::1:10091
+
+###
+# Socket server extension.
+# Implements the TCP/IP socket server interface for ZendHQ.
+zendhqd.extension = zendhq_sock
+
+# The socket server listening interface [[<ip-address>|*]:]<port>.
+# Specifies the interface and port number where the socket server is listening.
+# Default value is empty meaning that the socket server is disabled.
+#
+# This directive can be given multiple times to listen on multiple interfaces or port numbers.
+#
+# Listen on all the interfaces and port number 10093. This is a dual stack any-address that makes the
+# socket server to listen both IPv4 and IPv6 interfaces. 'netstat' on Linux systems may report that
+# the ZendHQ process is only listening on the 'tcp6' interface when this option is used.
+;zendhqd.socket.interface = *:10093
+#
+# Listen on the IPv4 loopback address only and port number 10093
+;zendhqd.socket.interface = 127.0.0.1:10093
+#
+# Listen on the IPv6 loopback address only and port number 10093
+;zendhqd.socket.interface = ::1:10093
+
+###
+# Message Queue extension.
+# Implements Message Queue for messages received via the ZeroMQ connection.
+zendhqd.extension = zray_mq
+
+###
+# Z-Ray historical data extension.
+# Implements Z-Ray historical data storage.
+zendhqd.extension = zray_db
+
+###
+# Full path of the SQLITE database used for Z-Ray historical data
+zendhqd.zray_db.database_path = /opt/zend/zendphp/var/db/z_ray.db
+
+###
+# Z-Ray historical data cleanup frequency in minutes.
+# Set to 0 to disable cleanup.
+# Default value is 10 minutes.
+zendhqd.zray_db.cleanup_frequency = 10
+
+###
+# Z-Ray historical data limit in number of days.
+# Any requests older than this number of days will be deleted.
+# The default value is 7 days
+zendhqd.zray_db.history_time = 7
+
+###
+# Z-Ray historical data limit in number of requests.
+# If the number of Z-Ray historical requests grows larger than this value, then
+# older requests will be deleted.
+# The default value is 10000 requests.
+zendhqd.zray_db.history_requests = 10000
+
+###
+# Monitoring extension.
+# Implements the Monitoring events queue.
+zendhqd.extension = zendhq_monitor
+
+###
+# Full path of the SQLITE database used for Monitoring data
+zendhqd.monitor.database_path = /opt/zend/zendphp/var/db/monitor.db
+
+###
+# Turns monitoring event aggregation on and off
+# If event aggregation is turned on, then similar monitoring events will be
+# combined into monitoring issues with a counter.
+# If event aggregation is turned off, then all the monitoring events will be
+# reported as individual issues.
+# The default value is 0 (aggregation off)
+;zendhqd.monitor.aggregate_events = 1
+
+###
+# Historical Monitoring data cleanup frequency in minutes.
+# Set to 0 to disable cleanup.
+# Default value is 10 minutes.
+zendhqd.monitor.cleanup_frequency = 10
+
+###
+# Historical Monitoring data limit in number of days.
+# Monitoring issues that do not reoccur during this number of days will be deleted.
+# The default value is 30 days
+zendhqd.monitor.history_time = 30
+
+###
+# Code Tracing extension
+# Implements Code Tracing support
+zendhqd.extension = zendhq_codetracing
+
+###
+# Full path of the SQLITE database used for Code Tracing data
+zendhqd.codetracing.database_path = /opt/zend/zendphp/var/db/codetracing.db
+
+###
+# Full path of the directory where Code Trace dump files are stored
+# The directory must be writable by the ZendHQ daemon process.
+zendhqd.codetracing.path = /opt/zend/zendphp/var/codetracing
+
+###
+# Code Tracing data cleanup frequency in minutes.
+# Set to 0 to disable cleanup.
+# Default value is 10 minutes.
+zendhqd.codetracing.cleanup_frequency = 10
+
+###
+# Code Tracing data limit in number of days.
+# Code Traces older than this number of days will be deleted. Setting this value
+# to zero disables time limit.
+# The default value is 30 days
+zendhqd.codetracing.history_time = 30
+
+###
+# Code Tracing data limit in number of traces.
+# If the number of Code Trace traces grows larger than this value, then older
+# traces will be deleted. Setting this value to zero disables checking the number
+# of traces.
+# The default value is 100 traces.
+zendhqd.codetracing.history_traces = 100
+
+###
+# Code Tracing data limit in number of MBytes.
+# If the total size of Code Trace traces including processed files grows larger
+# than this value, then older traces will be deleted.
+# Notice that this is not a hard limit and the limit is applied only during the
+# startup and data cleanup.
+# Setting this value to zero disables checking for the data size.
+# The default value is 500 MB.
+zendhqd.codetracing.history_size = 500
+
+###
+# Job Queue extension
+# Implements Job Queue support
+zendhqd.extension = zendhq_jobqueue
+
+###
+# Full path of the SQLITE database used for Job Queue data
+zendhqd.jobqueue.database_path = /opt/zend/zendphp/var/db/jobqueue.db
+
+###
+# Maximum number of Job Queue queues
+# This parameter limits the maximum allowed number of Job Queue queues.
+# MUST be a positive integer value greater than zero.
+#
+# The default value is 12
+;zendhqd.jobqueue.max_queues = 12
+
+###
+# Job Queue historical data cleanup frequency in minutes.
+# Set to 0 to disable cleanup (notice that database is still cleaned up once during
+# the startup).
+# Default value is 10 minutes.
+zendhqd.jobqueue.cleanup_frequency = 10
+
+###
+# Job Queue historical data limit in number of days.
+# Any completed or deleted jobs older than this number of days will be removed
+# from the database except jobs with the `persist` attribute set to true.
+#
+# The historical data limit for failed jobs is configured separately using the
+# `jobqueue.history_time_failed` directive.
+#
+# The default value is 7 days
+zendhqd.jobqueue.history_time = 7
+
+###
+# Job Queue failed job historical data limit in number of days.
+# Any failed job older than this number of days will be removed from the database
+# except jobs with the `persist` attribute set to true.
+#
+# If unset, uses the `jobqueue.history_time` directive value.
+#
+# The default value is unset.
+;zendhqd.jobqueue.history_time_failed = 14
+
+###
+# Name of the default Job Queue queue
+# The default Job Queue queue is always present and cannot be deleted.
+#
+# The default value is '__default__'
+;zendhqd.jobqueue.default_queue_name = __default__
+
+###
+# Allow running CLI jobs with root privileges.
+# If set to 1, 'TRUE', 'YES', or 'ON', then CLI job runners are available even when
+# the ZendHQ daemon runs with root privileges.
+# If set to 0, 'FALSE', 'NO', or 'OFF', then CLI job runners are not available when
+# the ZendHQ daemon runs with root privileges.
+#
+# WARNING: running CLI jobs while the ZendHQ daemon runs with root privileges puts
+# the system at great risk.
+#
+# The default value is '0'
+;zendhqd.jobqueue.enable_cli_jobs_as_root = 0
+
+###
+# Specifies the time in seconds a job is allowed to start later than scheduled
+# before reporting the "jq-exec-delay" monitoring event. Monitoring rules can
+# specify different trigger values, but they cannot be smaller than this value.
+# Must be a positive integer value including zero.
+# The default value is 10 seconds.
+# Set to zero to completely disable "jq-exec-delay" monitoring events.
+;zendhqd.jobqueue.allowed_exec_delay = 10
+
+###
+# Default job type for queues and jobs without an explicit job type value
+# Valid values are 'http', 'cli'.
+#
+# The default value is 'http'
+;zendhqd.jobqueue.job_type = http
+
+###
+# Default content type for HTTP jobs
+# Valid values are 'json', 'url-encoded', 'zend-server'.
+#
+# The 'json' type sends HTTP POST request data encoded in JSON and the 'Content-Type'
+# header set to 'application/json'.
+#
+# The 'url-encoded' type sends HTTP POST request data in in key-value tuples separated
+# by `&`, with `=` between the key and the value. The 'Content-Type' header set to
+# 'application/x-www-form-urlencoded'.
+#
+# The 'zend-server' type is for backwards compatibility with the Zend Server's
+# Job Queue. HTTP POST request data is encoded in JSON, but the 'Content-Type'
+# header is set to 'application/x-www-form-urlencoded'.
+#
+# The default value is 'json'
+;zendhqd.jobqueue.http_content_type = json
+
+###
+# Default request method for HTTP jobs
+# Valid values are 'GET', 'POST', and 'PUT'.
+#
+# The default value is 'POST'
+;zendhqd.jobqueue.http_method = POST
+
+###
+# Default persist job option
+# If set to 1, 'TRUE', 'YES', or 'ON', then the history of these jobs is kept
+# forever.
+# If set to 0, 'FALSE', 'NO', or 'OFF', then the history of these jobs is deleted
+# during the database cleanup.
+#
+# WARNING: there is no mechanism to delete the history of jobs with the 'persist_job'
+# flag set to 'TRUE' and the size of the database is allowed to grow forever.
+#
+# The default value is '0'
+;zendhqd.jobqueue.persist_job = 0
+
+###
+# Default persist job output option
+# Valid values are 'yes', 'no', 'error'.
+#
+# If set to 'yes', then output of Job Queue jobs is stored in the database.
+# If set to 'no', then the output of Job Queue jobs is not stored in the database.
+# If set to 'error', then the output of failed Job Queue jobs is stored in the database.
+#
+# The default value is 'no'
+;zendhqd.jobqueue.persist_job_output = error
+
+###
+# Maximum size of the job output that is stored in the database in kilobytes.
+#
+# Specifies the maximum size of job output stored to the database. Job output
+# larger than this value is truncated.
+#
+# A zero value disables checking for the maximum job output size.
+#
+# The default value is 63 KB
+;zendhqd.jobqueue.max_job_output_size = 63
+
+###
+# Default validate SSL flag for HTTP jobs
+# If set to 1, 'TRUE', 'YES', or 'ON', then HTTP jobs with a https url validate
+# the server certificate and do not allow self-signed certificates.
+# If set to 0, 'FALSE', 'NO', or 'OFF', then HTTP jobs with a https url still
+# validate the server certificate, but allow self-signed sertificates.
+#
+# The default value is 0
+;zendhqd.jobqueue.validate_ssl = 1
+
+###
+# Default job timeout in seconds
+# Job Queue jobs time out if they are not completed within this amount of time.
+# MUST be a positive integer value greater than zero.
+#
+# The timeout value can be overwritten when creating queues or jobs.
+#
+# The default value is 120 seconds
+;zendhqd.jobqueue.job_timeout = 120
+
+###
+# Default maximum retry count for jobs that fail or time out
+# MUST be a positive (zero include) integer value.
+# Setting this value to zero disables retries.
+#
+# The maximum retry count can be overwritten when creating queues or jobs.
+#
+# The default value is 2
+;zendhqd.jobqueue.job_retry_count = 2
+
+###
+# Default time between retries in number of seconds
+# If a job fails or times out, then waits this number of seconds before retrying.
+# MUST be a positive (zero included) integer value.
+#
+# The retry delay can be overwritten when creating queues or jobs.
+#
+# The default value is 1 second
+;zendhqd.jobqueue.job_retry_delay = 1
