@@ -41,7 +41,7 @@ zendhq.log_file = /opt/zend/zendphp/var/log/zendhq.log
 ; On Unix systems an UNIX domain socket with appropriate permissions could be
 ; used too.
 ; zendhq.daemon_uri=ipc:///tmp/z_ray.sock
-zendhq.daemon_uri = tcp://10.10.70.10:10090
+zendhq.daemon_uri = tcp://10.10.70.40:10090
 
 ; Directory where the ZendHQ extension can store temporary files
 ; The PHP process shall have full access to that directory.

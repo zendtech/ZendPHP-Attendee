@@ -20,19 +20,6 @@ Modify `default_monitor_rules.json` as desired
 * When the container starts, `zendhqd` will use follow these rules as default
 
 
-## Install the sample application
-* Open a terminal window and change to this directory (e.g. `/home/training`)
-* Change to the `mezzio` directory
-* Install the app using composer
-```
-php composer.phar self-update
-php composer.phar install
-```
-* Test the application from your browser:
-  * http://10.10.70.20/
-  * or:
-  * http://localhost:8881
-
 ## Build and run the orchestrated system
 Build the orchestrated containers as follows:
 ```
@@ -44,14 +31,46 @@ docker-compose up
 ```
 Access the shell for any container:
 * Choose only 1 of:
+  * nginx_mon
   * zendhq_mon
   * zendphp_mon_1
   * zendphp_mon_2
 ```
-docker exec -it zendhq_mon|zendphp_mon_1|zendphp_mon_2 /bin/bash
+docker exec -it nginx_mon|zendhq_mon|zendphp_mon_1|zendphp_mon_2 /bin/bash
 ```
-Use the GUI to communicate with the ZendHQ container:
+## Install the sample application
+* Open a terminal window and change to this directory (e.g. `/home/training`)
+* Change to the `mezzio` directory
+* Install the app using composer
+```
+php composer.phar self-update
+php composer.phar install
+```
+Add the following to the `/etc/hosts` file (or equivalent) on your host computer:
+```
+10.10.70.10  zendphp1.local zendphp2.local
+```
+Make sure the `nginx` container passes PHP requests to the ZendPHP containers:
+* Check if the `nginx` container runs PHP from `zendphp_mon_1`:
+  * `http://zendphp1.local`
+* Check if the `nginx` container runs PHP from `zendphp_mon_2`:
+  * `http://zendphp2.local`
+* In both cases you should see the default Mezzio splash screen
+
+## Run the ZendHQ GUI
 * Run the GUI as instructed
   * See: [https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm)
-* Use this IP address: `10.10.70.10`
+  * IP Address: `10.10.70.40`
+  * User
+    * Either leave blank, or
+    * Enter `admin`
+
+## Performance Monitoring
+TBD
+
+## Database Monitoring
+TBD
+
+## RBAC
+TBD
 

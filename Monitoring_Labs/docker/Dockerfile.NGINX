@@ -1,0 +1,18 @@
+FROM alpine:latest
+RUN \
+    echo "Installing basic utils ..." && \
+    apk add nano && \
+    apk add bash
+RUN \
+    echo "Installing nginx ..." && \
+    apk add nginx && \
+    chown -R nginx /var/www
+RUN \
+    echo "Adding zendphp user and group ..." && \
+    addgroup zendphp && \
+    adduser -S -h /var/zendphp -s /sbin/nologin -u 10000 zendphp zendphp && \
+    addgroup zendphp nginx
+COPY nginx.startup.sh /usr/sbin/startup.sh
+COPY nginx.zendphp.conf /etc/nginx/http.d/nginx.zendphp.conf
+RUN chmod +x /usr/sbin/*.sh
+ENTRYPOINT /usr/sbin/startup.sh

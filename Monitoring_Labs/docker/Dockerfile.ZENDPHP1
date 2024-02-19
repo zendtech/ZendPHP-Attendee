@@ -6,6 +6,9 @@ ARG BASE_IMAGE=fpm
 FROM cr.zend.com/zendphp/${ZENDPHP_VERSION}:${OS}-${OS_VERSION}-${BASE_IMAGE}
 COPY zendhq.ini.ZENDPHP /tmp/zendhq.ini
 RUN \
+    echo "Installing basic utils ..." && \
+    apk add nano
+RUN \
     echo "Installing the ZendHQ extension..." && \
-    zendphpctl ext install zendhq && \
-    cp /tmp/zendhq.ini /etc/php/"$PHP_VER_ALPINE"zend/conf.d/10_zendhq.ini
+    zendphpctl ext install --php "$ZENDPHP_VERSION" zendhq && \
+    cp /tmp/zendhq.ini /etc/zendphp/conf.d/10_zendhq.ini
