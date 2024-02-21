@@ -19,15 +19,14 @@ Modify `default_monitor_rules.json` as desired
 * The Dockerfile for the ZendHQ container will place this into the `/entrypoint.d` folder
 * When the container starts, `zendhqd` will use follow these rules as default
 
-
 ## Build and run the orchestrated system
 Build the orchestrated containers as follows:
 ```
-docker-compose build
+$ docker-compose build
 ```
 Run the system as follows:
 ```
-docker-compose up
+$ docker-compose up
 ```
 Access the shell for any container:
 * Choose only 1 of:
@@ -36,15 +35,28 @@ Access the shell for any container:
   * zendphp_mon_1
   * zendphp_mon_2
 ```
-docker exec -it nginx_mon|zendhq_mon|zendphp_mon_1|zendphp_mon_2 /bin/bash
+$ docker exec -it nginx_mon|zendhq_mon|zendphp_mon_1|zendphp_mon_2 /bin/bash
 ```
+
 ## Install the sample application
-* Open a terminal window and change to this directory (e.g. `/home/training`)
-* Change to the `mezzio` directory
-* Install the app using composer
+From your host system (not in the Docker container) open a command prompt or terminal window
+* Change to the directory where you cloned (or unzipped) this Git repository
+  * For this lab we'll call it `/path/to/repo`
+* Copy the entire `mezzio` directory from `/path/to/repo/mezzio` to /path/to/repo/Monitoring_Labs/mezzio`
+* Restart the orchestrated system
 ```
-php composer.phar self-update
-php composer.phar install
+$ docker-compose restart
+```
+Update the app using composer
+* Shell into the `nginx_mon` container
+```
+$ docker exec -it nginx_mon /bin/bash
+```
+Change to the `mezzio` folder in the container and update using Composer
+```
+# cd /var/www/messzio
+# php composer.phar self-update
+# php composer.phar install
 ```
 Add the following to the `/etc/hosts` file (or equivalent) on your host computer:
 ```
@@ -62,8 +74,9 @@ Make sure the `nginx` container passes PHP requests to the ZendPHP containers:
   * See: [https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm)
   * IP Address: `10.10.70.40`
   * User
-    * Either leave blank, or
     * Enter `admin`
+  * Token
+    * Enter `zendphp`
 
 ## Performance Monitoring
 TBD

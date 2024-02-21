@@ -7,7 +7,11 @@ FROM cr.zend.com/zendphp/${ZENDPHP_VERSION}:${OS}-${OS_VERSION}-${BASE_IMAGE}
 COPY zendhq.ini.ZENDPHP /tmp/zendhq.ini
 RUN \
     echo "Installing basic utils ..." && \
-    apk add nano
+    apk add nano && \
+    apk add sqlite
+RUN \
+    echo "Installing PHP extensions ..." && \
+    zendphpctl ext install --php "$ZENDPHP_VERSION" dom curl xml xmlwriter simplezml
 RUN \
     echo "Installing the ZendHQ extension..." && \
     zendphpctl ext install --php "$ZENDPHP_VERSION" zendhq && \

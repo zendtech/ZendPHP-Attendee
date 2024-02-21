@@ -28,7 +28,6 @@ services:
       context: ./docker
       dockerfile: Dockerfile.ZENDPHP1
     ports:
-     - "8881:80"
      - "9001:9000"
     volumes:
      - .:/home/training
@@ -47,7 +46,6 @@ services:
       context: ./docker
       dockerfile: Dockerfile.ZENDPHP2
     ports:
-     - "8882:80"
      - "9002:9000"
     volumes:
      - .:/home/training
