@@ -116,7 +116,7 @@ Create a new default config:
 ```
 # nano /etc/nginx/sites-available/default
 ```
-Insert the follogin:
+Insert the following:
 * NOTE: replace `<SOCKET>` with the `pid` setting noted above
   * e.g. `fastcgi_pass unix:/run/php/php8.2-zend-fpm.sock;`
 * Use `CTL+X` to save and exit
