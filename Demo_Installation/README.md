@@ -2,7 +2,16 @@
 
 Use this container to practice installing ZendPHP and ZendHQ
 * Container is based on Ubuntu Linux
-
+Prerequisites:
+* A version of Linux
+  * You can build the Docker image specified here
+  * If running Windows you can use WSL
+  * If running Mac you can just open a terminal window and proceed from there
+  * Make sure you have the `curl`,`nano` and `net-tools` packages installed
+* nginx
+  * For more information: [https://nginx.org/en/docs/install.html](https://nginx.org/en/docs/install.html)
+* This repository
+  * You can either clone it or download and unzip
 ## Build the Image
 * Make sure you have Docker Desktop or Docker CE + Docker Compose installed (see `/path/to/repo/README.md`)
 * Open a terminal window and change to this directory (e.g. `/path/to/repo/Basic_Installation`)
@@ -24,7 +33,13 @@ docker exec -it zendphp /bin/bash
 Read through these instructions to get an overview of the installation:
   * [https://help.zend.com/zendphp/current/content/installation/zendphpctl.htm](https://help.zend.com/zendphp/current/content/installation/zendphpctl.htm)
 ### Install `zendphpctl`
-Download the zendphpctl script and its signature from our repository:
+NOTE that these commands assume you are the root user.
+* This is indicated by the command prompt `#`.
+* Do not enter `#` when you type in these commands
+* Anything listed here that's not preceded by `#` is output
+* Do not enter the output as a command!
+* If you are not logged in as root, precede each of these commands with `sudo`
+Download the zendphpctl script and its signature from the ZendPHP repository:
 ```
 # curl -L https://repos.zend.com/zendphp/zendphpctl -o zendphpctl
 # curl -L https://repos.zend.com/zendphp/zendphpctl.sig -o zendphpctl.sig
@@ -33,8 +48,11 @@ Validate the signature:
 ```
 # echo "$(cat zendphpctl.sig) zendphpctl" | sha256sum -c
 ```
-If the signature is valid, remove the signature file, set permissions for the script, and move it into the path for the root user:
-* Note that you need to run this as root
+Check to see what's in your path:
+```
+echo $PATH
+```
+If the signature is valid, remove the signature file, set permissions for the script, and move it into a directory in the path for the root user:
 ```
 # rm zendphpctl.sig
 # chmod +x zendphpctl
@@ -46,7 +64,7 @@ Follow the instructions here in the "Installation using Zendphpctl":
 * Change `PHP_VER` to the desired PHP version (e.g. `8.2`)
 Install the sources repository
 ```
-zendphpctl repo install
+# zendphpctl repo install
 ```
 Install target version of PHP
 * NOTE: you'll be prompted for timezone information
@@ -73,11 +91,16 @@ Check for installed modules:
 ```
 
 ## Install PHP-FPM
+If you're not running the lab in a container provisioned as part of this course, you need to install `nginx`
+* For more information: [https://nginx.org/en/docs/install.html](https://nginx.org/en/docs/install.html)
+
 Check if FPM support is installed (fpm is-installed)
 ```
 # zendphpctl fpm is-installed
 ```
 Install PHP-FPM for the default version
+* Be sure to note the location of the PHP-FPM config file
+* We'll refer to this file later as `FPM_CONFIG_FILE`
 ```
 # zendphpctl fpm install
 ```
@@ -95,6 +118,11 @@ Confirm that PHP-FPM is set to "listen" as `www-data` (same as `nginx`):
   * Later in this tutorial we'll refer to this setting as `<SOCKET>`
   * e.g. `listen = /run/php/php8.2-zend-fpm.sock`
   * The setting for `<SOCKET>` in this example is `/run/php/php8.2-zend-fpm.sock`
+Find the user in the PHP-FPM `pool.d` directory
+```
+# cat /etc/php/8.2-zend/fpm/pool.d/www.conf |grep user
+```
+Find the location of the socket in the PHP-FPM `pool.d` directory
 ```
 # cat /etc/php/8.2-zend/fpm/pool.d/www.conf |grep listen
 ```
@@ -110,7 +138,7 @@ Confirm PHP-FPM is running
 ## Configure nginx for the application and PHP-FPM
 Save the current `nginx` default
 ```
-mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.old
+# mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.old
 ```
 Create a new default config:
 ```
@@ -118,7 +146,7 @@ Create a new default config:
 ```
 Insert the following:
 * NOTE: replace `<SOCKET>` with the `pid` setting noted above
-  * e.g. `fastcgi_pass unix:/run/php/php8.2-zend-fpm.sock;`
+  * e.g. `/run/php/php8.2-zend-fpm.sock;`
 * Use `CTL+X` to save and exit
 ```
 server {
@@ -135,6 +163,8 @@ server {
 	}
 }
 ```
+NOTE: you might need to assign permissions to the PHP-FPM user to access the socket
+* Usually this user is `www-data`
 Restart nginx
 ```
 # /etc/init.d/nginx restart
@@ -160,10 +190,16 @@ Set the permissions for this user in the /var/www` directory structure:
 ```
 # chown -R www-data /var/www
 ```
+Note the IP address of your container or installation
+* We'll refer to that as `IP_ADDR` in this lab
+```
+# ifconfig
+```
 Test the application from your browser:
-* http://10.10.80.10/test.php
-* or:
-* http://localhost:8888/test.php
+* http://IP_ADDR/test.php
+Or if you are using a container or subsystem that maps port 80 of the container to another port:
+* Example: port 80 maps to 8888: `http://localhost:8888/test.php`
+
 
 ## Install ZendHQ
 Review the instructions here:
@@ -190,7 +226,8 @@ zendhqd.daemon_pub_uri = tcp://0.0.0.0:10092
 zendhqd.websocket.interface = 0.0.0.0:10091
 ```
 * Use `CTL+X` to save exit
-
+Install the ZendHQ license
+* Copy the license file to: `/opt/zend/zendphp/etc/license`
 Start the daemon
 * NOTE: you will receive a message regarding a missing license, however the daemon will still run
 ```
