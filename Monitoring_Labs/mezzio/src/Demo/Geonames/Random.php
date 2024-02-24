@@ -3,7 +3,7 @@ namespace Demo\Geonames;
 
 use SplFileObject;
 use RuntimeException;
-#[App\Geonames\Random]
+#[Demo\Geonames\Random]
 class Random extends Base
 {
     const ERR_GEONAMES = "\nShort Geonames file doesn't exist\n"
@@ -13,19 +13,27 @@ class Random extends Base
                        . "App\Geonames\Build::buildShort()\n"
                        . "App\Geonames\Build::filterByCountry('US', \$src, \$dest)\n"
                        . "\nYou need to filter by US because the (free) US weather service only provides weather for the USA\n";
+    #[App\Geonames\Random\__invoke\return("?array")]
+    public function __invoke()
+    {
+        return $this->pickCity();
+    }
     /**
      * Picks city at random
      * Returns array like this:
      * ['name' => 'City Name', 'lat' => 'latitude', 'lon' => 'longitude']
+     *
+     * @param string $delim = , or \t
      */
     #[App\Geonames\Random\pickCity\return("?array")]
-    public function __invoke()
+    public function pickCity(string $delim = "\t")
     {
         $skip = rand(0, self::cityCount());
         $geo  = self::getGeo();
         $line = [];
-        for ($x = 0; $x < $skip; $x++)
-            $line = $geo->fgetcsv();
+        for ($x = 0; $x < $skip; $x++) {
+            $line = $geo->fgetcsv($delim);
+        }
         return $line;
     }
 }

@@ -6,6 +6,8 @@ namespace App;
  *
  * @see https://docs.laminas.dev/laminas-component-installer/
  */
+use Demo\Weather\Forecast;
+use Demo\Geonames\Random;
 use Psr\Container\ContainerInterface;
 class ConfigProvider
 {
@@ -31,11 +33,14 @@ class ConfigProvider
         return [
             'invokables' => [
                 Handler\PingHandler::class => Handler\PingHandler::class,
+                Postcode::class => Postcode::class,
+                Forecast::class => Forecast::class,
+                Random::class => Random::class,
             ],
             'factories'  => [
                 Handler\HomePageHandler::class => Handler\HomePageHandlerFactory::class,
                 Handler\QueryHandler::class => Handler\QueryHandlerFactory::class,
-                Postcode::class => function ($container) { return new Postcode(); },
+                Handler\ForecastHandler::class => Handler\ForecastHandlerFactory::class,
                 /*
                 Connection::class => function (ContainerInterface $container) {
                     return new Connection(); },

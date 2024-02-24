@@ -2,5 +2,8 @@ ARG OS=alpine
 ARG OS_VERSION=3.18
 FROM cr.zend.com/zendhq:${OS}-${OS_VERSION}
 COPY license /entrypoint.d/license
-COPY zendhqd.ini.ZENDHQ /entrypoint.d/zendhqd.ini
-COPY default_monitor_rules.json /entrypoint.d/default_monitor_rules.json
+RUN \
+    echo "Configuring zendhqd to listen on 0.0.0.0 ..." && \
+    cp /opt/zend/zendphp/etc/zendhqd.ini /tmp/zendhqd.ini.old && \
+    sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /opt/zend/zendphp/etc/zendhqd.ini
+

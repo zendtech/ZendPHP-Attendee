@@ -1,6 +1,6 @@
 #!/bin/bash
 DIR=`pwd`
-export USAGE="Usage: admin.sh up|down|build|shell|ls [nginx_mon|zendhq_mon|zendphp_mon_1|zendphp_mon_2]"
+export USAGE="Usage: admin.sh up|down|build|shell|ls [nginx_mon|zendphp_mon|zendhq_mon]"
 if [[ -z "$1" ]]; then
     echo $USAGE
     exit 1

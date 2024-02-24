@@ -2,6 +2,24 @@ version: '3.3'
 
 services:
 
+  zendphp_mon:
+    hostname: zendphp_mon
+    container_name: zendphp_mon
+    image: phptraining/zendphp_mon
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.ZENDPHP
+    ports:
+     - "9001:9000"
+    volumes:
+     - .:/home/training
+     - ./mezzio:/var/www/mezzio
+    restart: always
+    working_dir: /home/training
+    networks:
+      zendphp_mon:
+        ipv4_address: 10.10.70.20
+
   nginx_mon:
     hostname: nginx_mon
     container_name: nginx_mon
@@ -20,42 +38,6 @@ services:
       zendphp_mon:
         ipv4_address: 10.10.70.10
 
-  zendphp_mon_1:
-    hostname: zendphp_mon_1
-    container_name: zendphp_mon_1
-    image: phptraining/zendphp_mon_1
-    build:
-      context: ./docker
-      dockerfile: Dockerfile.ZENDPHP1
-    ports:
-     - "9001:9000"
-    volumes:
-     - .:/home/training
-     - ./mezzio:/var/www/mezzio
-    restart: always
-    working_dir: /home/training
-    networks:
-      zendphp_mon:
-        ipv4_address: 10.10.70.20
-
-  zendphp_mon_2:
-    hostname: zendphp_mon_2
-    container_name: zendphp_mon_2
-    image: phptraining/zendphp_mon_2
-    build:
-      context: ./docker
-      dockerfile: Dockerfile.ZENDPHP2
-    ports:
-     - "9002:9000"
-    volumes:
-     - .:/home/training
-     - ./mezzio:/var/www/mezzio
-    restart: always
-    working_dir: /home/training
-    networks:
-      zendphp_mon:
-        ipv4_address: 10.10.70.30
-
   zendhq_mon:
     hostname: zendhq_mon
     container_name: zendhq_mon
@@ -72,7 +54,7 @@ services:
     working_dir: /home/training
     networks:
       zendphp_mon:
-        ipv4_address: 10.10.70.40
+        ipv4_address: 10.10.70.30
 
 networks:
   zendphp_mon:

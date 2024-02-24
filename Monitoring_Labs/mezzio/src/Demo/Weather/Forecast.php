@@ -1,5 +1,5 @@
 <?php
-namespace App\Weather;
+namespace Demo\Weather;
 // thanks to https://weather-gov.github.io/api/
 use RuntimeException;
 class Forecast

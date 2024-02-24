@@ -10,7 +10,7 @@ class Base
     const GEONAMES_FULL  = 'cities15000.txt';
     const GEONAMES_SHORT = 'cities15000short.txt';
     const GEONAMES_FILTERED = 'cities15000filtered.txt';
-    const DATA_PATH      = __DIR__ . '/../../data/';
+    const DATA_PATH      = __DIR__ . '/../../../data/';
     public static $geo   = NULL;
     public static $count = 0;
     public static $geoFn = self::GEONAMES_FILTERED;
@@ -39,8 +39,9 @@ class Base
                 $line = $geo->fgets();
                 self::$count++;
             }
+            self::$count--;
         }
-        return --self::$count;
+        return self::$count;
     }
 }
 

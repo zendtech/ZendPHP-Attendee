@@ -54,7 +54,7 @@ use SplFileObject;
 class Postcode
 {
     public const DELIM      = "\t";
-    public const DATA_FILE  = BASE_DIR . '/data/US_Post_Codes.txt';
+    public const DATA_FILE  = BASE_DIR . '/data/US.txt';
     public const FMT_STRING = '%2s|%11s|%30s|%12s|%2s|%12s|%3s|%12s|%3s|%10s|%10s|%2s';
     public const HEADERS    = ['ISO2','PostCode','City','State','Code','Name2','Code2','Name3','Code3','Latitude','Longitude','Accuracy'];
     public const USAGE      = 'WEB: http://zendphp1.local/api/query?city=Xyz&state=ZZ';

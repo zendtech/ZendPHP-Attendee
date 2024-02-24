@@ -71,7 +71,6 @@
     "autoload": {
         "psr-4": {
             "App\\": "src/App/src/",
-            "Postcode\\": "src/Postcode",
             "Demo\\": "src/Demo"
         }
     },
