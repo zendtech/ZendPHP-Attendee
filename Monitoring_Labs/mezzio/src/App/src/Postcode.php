@@ -1,99 +1,258 @@
 <?php
 namespace App;
-/*
-
-*** Usage ***********************************************
-
-WEB: http://zendphp1.local/api/query?city=Xyz&state=ZZ
-CLI: php post_code_lookup.php [CITY] [STATE]
-*** Source: https://download.geonames.org/export/zip/ ***
-
-The data format is tab-delimited text in utf8 encoding, with the following fields :
-country code      : iso country code, 2 characters
-postal code       : varchar(20)
-place name        : varchar(180)
-admin name1       : 1. order subdivision (state) varchar(100)
-admin code1       : 1. order subdivision (state) varchar(20)
-admin name2       : 2. order subdivision (county/province) varchar(100)
-admin code2       : 2. order subdivision (county/province) varchar(20)
-admin name3       : 3. order subdivision (community) varchar(100)
-admin code3       : 3. order subdivision (community) varchar(20)
-latitude          : estimated latitude (wgs84)
-longitude         : estimated longitude (wgs84)
-accuracy          : accuracy of lat/lng from 1=estimated, 4=geonameid, 6=centroid of addresses or shape
-
-**** License **************************************************************
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-* Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-* Redistributions in binary form must reproduce the above
-  copyright notice, this list of conditions and the following disclaimer
-  in the documentation and/or other materials provided with the
-  distribution.
-* Neither the name of the  nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-*/
+/**
+ * Uses both a postcodes text file and an SQLite database
+ * When you call lookup():
+ * 1. First does a  database lookup
+ * 2. If not found, does a lookup from the text file
+ * 3. If a postcode is not in the database, a row is added and access is set to 1
+ * 4. If a postcode exists in the database, access is incremented +1
+ *
+ */
+use PDO;
+use PDOStatement;
 use SplFileObject;
 class Postcode
 {
     public const DELIM      = "\t";
-    public const DATA_FILE  = BASE_DIR . '/data/US.txt';
+    public const TABLE      = 'postcodes';
+    public const DATA_DIR   = BASE_DIR . '/data/';
+    public const DATA_FILE  = BASE_DIR . 'US.txt';
+    public const DB_FN      = BASE_DIR . 'training.db';
     public const FMT_STRING = '%2s|%11s|%30s|%12s|%2s|%12s|%3s|%12s|%3s|%10s|%10s|%2s';
-    public const HEADERS    = ['ISO2','PostCode','City','State','Code','Name2','Code2','Name3','Code3','Latitude','Longitude','Accuracy'];
+    public const HEADERS    = ['ISO2','PostCode','City','State','Code','Name2','Code2','Name3','Code3','Latitude','Longitude','Accuracy','Access'];
     public const USAGE      = 'WEB: http://zendphp1.local/api/query?city=Xyz&state=ZZ';
-    public function find_city( array &$resp,
-                        array $row,
-                        string $city,
-                        string $state = '')
+    public $sql = '';
+    public ?PDO $pdo = NULL;
+    public $postcode_fields = [
+        'country_code' => 'TEXT NOT NULL',
+        'postal_code' => 'TEXT NOT NULL PRIMARY KEY',
+        'city_name' => 'TEXT NOT NULL',
+        'state_name' => 'TEXT',
+        'state_code' => 'TEXT',
+        'county_name' => 'TEXT',
+        'county_code' => 'TEXT',
+        'other_name' => 'TEXT',
+        'other_code' => 'TEXT',
+        'latitude' => 'REAL',
+        'longitude' => 'REAL',
+        'accuracy' => 'INT',
+        'access' => 'INT',
+    ];
+    public function __construct(string $dbFile = self::DATA_DIR . self::DB_FN)
     {
-        // check to see if city is present in $row
-        if (empty($row[2])) return FALSE;
-        $ok = FALSE;
-        if (empty($state)) {
-            $ok = TRUE;
-        } else {
-            $name = $row[3] ?? '';
-            $code = $row[4] ?? '';
-            if ($name === $state) $ok = TRUE;
-            if ($code === $state) $ok = TRUE;
+        $this->pdo = $this->getConnection();
+    }
+   /**
+     * Performs a city/state lookup
+     *
+     * @param string $city
+     * @param string $state
+     * @return array
+     */
+    public function lookup(string $city, string $state = '') : array
+    {
+        $resp['found'] = 0;
+        if (!$this->lookup_from_db($resp, $city, $state)) {
+            $this->lookup_from_file($resp, $city, $state);
         }
-        if ($ok && stripos($row[2], $city) !== FALSE) {
-            if (count($row) === 12) {
-                $resp['found']++;
-                $resp['data'][$row[1]] = array_combine(self::HEADERS, $row);
+        // update/insert results in database
+        if ($resp['found'] > 0) {
+            $select = $this->getSelectStmt();
+            $update = $this->getUpdateStmt();
+            $insert = $this->getInsertStmt();
+            foreach ($resp['data'] as $postcode => $row) {
+                $res = $select->execute([$postcode]);
+                if (empty($res)) {
+                    $insert->execute($row);
+                } else {
+                    $row = $res->fetch(PDO::FETCH_ASSOC);
+                    $access = (int) ($row['access'] ?? 0);
+                    $update->execute([++$access, $postcode]);
+                }
             }
         }
+        return $resp;
     }
-    public function lookup(string $city, string $state = '') : array
+     /**
+     * Performs a city/state lookup from the Geonames file
+     *
+     * @param array $resp
+     * @param string $city
+     * @param string $state
+     * @return array
+     */
+    public function lookup_from_file(array &$resp, string $city, string $state = '') : array
     {
         $resp['found'] = 0;
         if (empty($city)) {
             $resp['data']['Usage'] = self::USAGE;
         } else {
-            $data  = new SplFileObject(self::DATA_FILE);
-            while (!$data->eof()) {
-                $row = $data->fgetcsv(self::DELIM);
+            $obj = new SplFileObject(self::DATA_DIR . self::DATA_FILE);
+            while (!$obj->eof()) {
+                $row = $obj->fgetcsv(self::DELIM);
                 if (empty($row)) continue;
-                $this->find_city($resp, $row, $city, $state);
+                $arr = [];
+                $ok = FALSE;
+                if (empty($state)) {
+                    $ok = TRUE;
+                } else {
+                    $name = $row[3] ?? '';
+                    $code = $row[4] ?? '';
+                    if ($name === $state) $ok = TRUE;
+                    if ($code === $state) $ok = TRUE;
+                }
+                if ($ok && stripos($row[2], $city) !== FALSE) {
+                    if (!empty($row)) {
+                        $pos = 0;
+                        foreach (self::HEADERS as $key) {
+                            $arr[$key] = $row++;
+                        }
+                        $resp['found']++;
+                        $resp['data'][$row[1]] = $arr;
+                    }
+                }
             }
         }
-        return $resp;
+        return (bool) $resp['found'];
+    }
+    /**
+     * Returns a row from the postcodes file at random
+     *
+     * @return array
+     */
+    public function getRandomPostcode() : array
+    {
+        $row = [];
+        // chooses a city/state at random from the postcodes file
+        $obj = new SplFileObject(self::DATA_DIR . self::DATA_FILE);
+        $num = 0;
+        // first get the # rows
+        while ($row = $obj->fgets()) $num++;
+        // now pick one at random
+        $obj->rewind();
+        $pos = rand(0, $num);
+        do {
+            $row = $obj->fgetcsv(self::DELIM);
+        } while (--$pos > 0 && !$obj->eof());
+        return $row;
+    }
+    /**
+     * Performs a city/state lookup from the Geonames file
+     *
+     * @param array $resp
+     * @param string $city
+     * @param string $state
+     * @return array
+     */
+    public function lookup_from_db(array &$resp, string $city, string $state = '') : array
+    {
+        $resp['found'] = 0;
+        $sql = 'SELECT * FROM ' . self::TABLE . ' '
+             . 'WHERE city = ?';
+        if (empty($state)) {
+            $stmt = $this->pdo->prepare($sql);
+            $data = [$city];
+        } else {
+            $sql .= ' AND ';
+            if (strlen(trim($state)) > 2) {
+                $sql .= 'state_name = ?;';
+            } else {
+                $sql .= 'state_code = ?;';
+            }
+            $data = [$city, $state];
+        }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($data);
+        while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+            $resp['found']++;
+            $resp['data'][$row[1]] = $row;
+        }
+        return (bool) $resp['found'];
+    }
+    /**
+     * Returns a PDO connection
+     *
+     * @return PDO
+     * @throws ERROR
+     */
+    public function getConnection(string $dbFile)
+    {
+        $dbFile ??= self::DATA_DIR . self::DB_FN;
+        if (empty($this->pdo)) {
+            $this->pdo = new PDO('sqlite://' . $dbFile);
+        }
+        return $this->pdo;
+    }
+    /**
+     * Creates an SQLite database file to match postcodes
+     *
+     * @param string $dbFile : name of the database file
+     * @return int | FALSE : returns # rows affected or bool FALSE
+     */
+    public function buildPostCodesTable()
+    {
+        // set up PDO
+        $sql = 'DROP TABLE IF EXISTS ' . self::TABLE . ';' . PHP_EOL;
+        $sql .= 'CREATE TABLE postcodes (' . PHP_EOL;
+        $sql .= '    id INTEGER PRIMARY KEY AUTOINCREMENT,' . PHP_EOL;
+        foreach ($this->postcode_fields as $name => $type) {
+            $sql .= '    ' . $name . ' ' . $type . ',' . PHP_EOL;
+        }
+        $sql = substr(trim($sql), 0, -1);
+        $sql .= PHP_EOL . ');';
+        $this->sql = $sql;
+        return $this->pdo->exec($sql);
+    }
+    /**
+     * Selects based on postcode
+     *
+     * @return PDOStatement | FALSE
+     */
+    public function getSelectStmt() : PDOStatement|bool
+    {
+        $sql = 'SELECT * FROM ' . self::TABLE . ' '
+             . 'WHERE postal_code = ?';
+        return $pdo->prepare($sql);
+    }
+    /**
+     * Updates the 'access' field
+     *
+     * @return PDOStatement | FALSE
+     */
+    public function getUpdateStmt() : PDOStatement|bool
+    {
+        $sql = 'UPDATE ' . self::TABLE . ' '
+             . 'SET access = ? '
+             . 'WHERE postal_code = ?';
+        return $pdo->prepare($sql);
+    }
+    /**
+     * Locates data by
+     *
+     * @return PDOStatement | FALSE
+     */
+    public function getInsertStmt() : PDOStatement|bool
+    {
+        // deal with the access count
+        $data['access'] = 1;
+        // build insert
+        $sql = 'INSERT INTO postcodes (';
+        foreach ($this->fields as $key => $value) {
+            if ($key === 'id') continue;
+            if (!empty($data[$key])) {
+                $sql .= $key . ',';
+            }
+        }
+        $sql = substr($sql, 0, -1);
+        $sql .= ') VALUES (';
+        foreach ($this->fields as $key => $value) {
+            if ($key === 'id') continue;
+            if (!empty($data[$key])) {
+                $sql .= ':' . $key . ',';
+            }
+        }
+        $sql = substr($sql, 0, -1) . ');';
+        return $pdo->prepare($sql);
     }
 }

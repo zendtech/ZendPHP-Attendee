@@ -23,10 +23,15 @@ class QueryHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        // Do some work...
+        $data   = [];
         $params = $request->getQueryParams();
         $city   = trim(strip_tags($params['city'] ?? ''));
         $state  = trim(strip_tags($params['state'] ?? ''));
+        if (empty($city)) {
+            $row = $this->postcode->getRandomPostcode();
+            $city = $row[2] ?? '';
+            $state = $row[4] ?? '';
+        }
         // Render and return a response:
         return new JsonResponse($this->postcode->lookup($city, $state));
     }
