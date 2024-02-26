@@ -4,7 +4,8 @@ $this->headLink()
     ->prependStylesheet('https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css');
 $this->inlineScript()
     ->prependFile('https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js')
-    ->prependFile('https://code.jquery.com/jquery-3.5.1.min.js');
+    ->prependFile('https://code.jquery.com/jquery-3.5.1.min.js')
+    ->prependFile('https://kit.fontawesome.com/220f73c514.js');
 ?>
 <!DOCTYPE html>
 <html>
@@ -13,7 +14,7 @@ $this->inlineScript()
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="shortcut icon" href="https://getlaminas.org/images/favicon/favicon.ico" />
-    <?=$this->headTitle('mezzio')->setSeparator(' - ')->setAutoEscape(false)?>
+    <?=$this->headTitle('ZendPHP/ZendHQ')->setSeparator(' - ')->setAutoEscape(false)?>
     <?=$this->headMeta()?>
     <?=$this->headLink()?>
     <style>
@@ -53,17 +54,22 @@ $this->inlineScript()
                         </li>
                         <li class="nav-item">
                             <a href="<?=$this->url('api.ping')?>" class="nav-link">
-                                Ping Test
+                                <i class="fa-solid fa-table-tennis-paddle-ball"></i> Ping
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?=$this->url('api.info')?>" class="nav-link">
+                                <i class="fa-solid fa-circle-info"></i> Info
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="<?=$this->url('api.forecast')?>" class="nav-link">
-                                Weather Forecast
+                                <i class="fa-solid fa-snowflake"></i> Weather
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="<?=$this->url('api.query')?>" class="nav-link">
-                                Postcode Lookup
+                                <i class="fa-solid fa-envelopes-bulk"></i> Postcode
                             </a>
                         </li>
                     </ul>

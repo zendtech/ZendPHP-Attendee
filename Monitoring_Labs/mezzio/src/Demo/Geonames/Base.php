@@ -5,6 +5,7 @@ use SplFileObject;
 use RuntimeException;
 class Base
 {
+    const DELIM          = "\t";
     const GEONAMES_URL   = 'https://download.geonames.org/export/dump/';
     const GEONAMES_ZIP   = 'cities15000.zip';
     const GEONAMES_FULL  = 'cities15000.txt';
@@ -14,6 +15,10 @@ class Base
     public static $geo   = NULL;
     public static $count = 0;
     public static $geoFn = self::GEONAMES_FILTERED;
+    public function __construct(?string $delim = NULL)
+    {
+        $this->delim = $delim ?? static::DELIM;
+    }
     /**
      * Returns SplFileObject instance for GEONAMES_SHORT in read mode
      *
@@ -25,23 +30,6 @@ class Base
             self::$geo = new SplFileObject(self::DATA_PATH . self::$geoFn, 'r');
         self::$geo->rewind();
         return self::$geo;
-    }
-    /**
-     * Gets count of number of cities in geonames file
-     *
-     * @return int $count
-     */
-    public static function cityCount() : int
-    {
-        if (self::$count === 0) {
-            $geo = self::getGeo();
-            while (!$geo->eof()) {
-                $line = $geo->fgets();
-                self::$count++;
-            }
-            self::$count--;
-        }
-        return self::$count;
     }
 }
 

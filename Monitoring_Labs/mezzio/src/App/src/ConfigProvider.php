@@ -41,6 +41,7 @@ class ConfigProvider
                 Handler\HomePageHandler::class => Handler\HomePageHandlerFactory::class,
                 Handler\QueryHandler::class => Handler\QueryHandlerFactory::class,
                 Handler\ForecastHandler::class => Handler\ForecastHandlerFactory::class,
+                Handler\InfoHandler::class => Handler\InfoHandlerFactory::class,
                 /*
                 Connection::class => function (ContainerInterface $container) {
                     return new Connection(); },

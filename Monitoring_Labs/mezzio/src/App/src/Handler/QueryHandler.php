@@ -5,6 +5,7 @@ use App\Postcode;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\JsonResponse;
 use Mezzio\Template\TemplateRendererInterface;
 
@@ -17,8 +18,8 @@ class QueryHandler implements RequestHandlerInterface
     public ?Lookup $lookup = NULL;
     public function __construct(TemplateRendererInterface $renderer, Postcode $postcode)
     {
-        $this->postcode = $postcode;
         $this->renderer = $renderer;
+        $this->postcode = $postcode;
     }
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
@@ -32,7 +33,13 @@ class QueryHandler implements RequestHandlerInterface
             $city = $row[2] ?? '';
             $state = $row[4] ?? '';
         }
-        // Render and return a response:
-        return new JsonResponse($this->postcode->lookup($city, $state));
+        $result = $this->postcode->lookup($city, $state);
+        $accept = current($request->getHeader('Accept') ?? []);
+        if (!empty($accept) && str_contains($accept, 'json')) {
+            $response = new JsonResponse($result);
+        } else {
+            $response = new HtmlResponse($this->renderer->render('app::query', ['result' => $result]));
+        }
+        return $response;
     }
 }

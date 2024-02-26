@@ -12,9 +12,12 @@ RUN \
     echo "Installing PHP extensions ..." && \
     zendphpctl ext install --php "$ZENDPHP_VERSION" dom && \
     zendphpctl ext install --php "$ZENDPHP_VERSION" simplexml && \
-    zendphpctl ext install --php "$ZENDPHP_VERSION" curl
+    zendphpctl ext install --php "$ZENDPHP_VERSION" curl && \
+    zendphpctl ext install --php "$ZENDPHP_VERSION" pdo_sqlite
 RUN \
     echo "Installing the ZendHQ extension..." && \
     zendphpctl ext install --php "$ZENDPHP_VERSION" zendhq && \
     cp /etc/zendphp/conf.d/10_zendhq.ini /tmp/zendhq.ini.old && \
     sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /etc/zendphp/conf.d/10_zendhq.ini
+COPY zendphp.startup.sh /entrypoint.d/startup.sh
+

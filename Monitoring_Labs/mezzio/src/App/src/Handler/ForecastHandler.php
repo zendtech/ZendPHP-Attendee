@@ -21,8 +21,9 @@ class ForecastHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
         // Pick random city
+        $city   = $this->random->pickCity('US');
+        $error  = [];
         $output = '';
-        $city   = $this->random->pickCity();
         $output .= "Random City Info:\n";
         $output .= var_export($city, TRUE) . PHP_EOL;
         // Weather Forecast for Random City
@@ -31,8 +32,14 @@ class ForecastHandler implements RequestHandlerInterface
             $lat  = $city[3];
             $lon  = $city[4];
             $output .= "Weather forecast for $name\n";
-            $output .= (new Forecast())->getForecast($lat, $lon);
+            $output .= (new Forecast())->getForecast($lat, $lon, $error);
         }
-        return new HtmlResponse($this->renderer->render('app::forecast', ['output' => $output]));
+        $accept = current($request->getHeader('Accept') ?? []);
+        if (!empty($accept) && str_contains($accept, 'json')) {
+            $response = new JsonResponse(['output' => $output, 'error' => $error]);
+        } else {
+            $response = new HtmlResponse($this->renderer->render('app::forecast', ['output' => $output, 'error' => $error]));
+        }
+        return $response;
     }
 }

@@ -50,7 +50,7 @@ class Forecast
         $new_url = $data?->properties->forecast ?? '';
         if (empty($new_url)) {
             error_log(__METHOD__ . ':' . __LINE__ . ':' . $new_url);
-            error_log(__METHOD__ . ':' . __LINE__ . ':' . var_export($data));
+            error_log(__METHOD__ . ':' . __LINE__ . ':' . var_export($data, TRUE));
             error_log(__METHOD__ . ':' . __LINE__ . ':' . $result);
             $msg[] = self::ERROR_RETURN . ' [' . __LINE__ . ']';
             return NULL;
