@@ -1,0 +1,31 @@
+FROM ubuntu:jammy
+COPY secrets.sh /tmp/secrets.sh
+COPY startup.sh /tmp/startup.sh
+RUN chmod +x /tmp/*.sh
+RUN \
+    echo "Installing misc tools ..." && \
+    apt-get update && \
+    apt-get install -y less vim nano net-tools wget unzip apt-utils curl
+RUN \
+    echo "Installing Mariadb (MySQL open source equivalent) ..." && \
+    apt-get install -y mysql-server && \
+    /etc/init.d/mysql start && \
+    sleep 3 && \
+    . /tmp/secrets.sh && \
+	mysql -uroot -ppassword -v -e "CREATE DATABASE IF NOT EXISTS $DB_NAM;" && \
+	mysql -uroot -ppassword -v -e "CREATE USER IF NOT EXISTS '$DB_USR'@'$DB_HOST' IDENTIFIED BY '$DB_PWD';" && \
+	mysql -uroot -ppassword -v -e "GRANT ALL PRIVILEGES ON *.* TO '$DB_USR'@'$DB_HOST';" && \
+	mysql -uroot -ppassword -v -e "FLUSH PRIVILEGES;"
+RUN \
+    echo "Installing nginx ..." && \
+    apt-get update && \
+    apt-get install -y nginx && \
+    chown -R www-data /var/www
+RUN \
+    echo "Installing Adminer ..." && \
+    . /tmp/secrets.sh && \
+    cd /tmp && \
+    wget https://github.com/vrana/adminer/releases/download/v$DB_ADMIN_VER/adminer-$DB_ADMIN_VER-en.php && \
+    mv /tmp/adminer-$DB_ADMIN_VER-en.php /tmp/adminer.php
+WORKDIR /home/training
+ENTRYPOINT /tmp/startup.sh

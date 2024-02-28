@@ -8,7 +8,12 @@ namespace App;
  * 3. If a postcode is not in the database, a row is added and access is set to 1
  * 4. If a postcode exists in the database, access is incremented +1
  *
+ * IMPORTANT:
+ * Occasionally throws an error: SQLSTATE[HY000]: General error: 25 column index out of range
+ * This is by design in order to facilitate the monitoring/troubleshooting lab
+ *
  */
+
 use PDO;
 use PDOStatement;
 use SplFileObject;

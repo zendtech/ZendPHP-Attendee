@@ -3,7 +3,12 @@ ARG OS_VERSION=3.18
 FROM cr.zend.com/zendhq:${OS}-${OS_VERSION}
 COPY license /entrypoint.d/license
 RUN \
-    echo "Configuring zendhqd to listen on 0.0.0.0 ..." && \
-    cp /opt/zend/zendphp/etc/zendhqd.ini /tmp/zendhqd.ini.old && \
-    sed -i 's/127\.0\.0\.1/0\.0\.0\.0/g' /opt/zend/zendphp/etc/zendhqd.ini
-
+    echo "Installing basic utils ..." && \
+    apk add nano && \
+    apk add sqlite
+RUN \
+    echo "Configuring zendhqd.ini ..." && \
+    sed -i 's/\;zendhqd\.websocket\.interface \= \*\:10091/zendhqd\.websocket\.interface \= \*\:10091/g' /opt/zend/zendphp/etc/zendhqd.ini && \
+    sed -i 's/\;zendhqd\.daemon_uri/zendhqd\.daemon_uri/g' /opt/zend/zendphp/etc/zendhqd.ini && \
+    sed -i 's/zendhqd\.daemon_uri \= tcp\:\/\/127\.0\.0\.1\:10090/zendhqd\.daemon_uri \= tcp\:\/\/0\.0\.0\.0\:10090/g' /opt/zend/zendphp/etc/zendhqd.ini && \
+    sed -i 's/zendhqd\.websocket\.interface \= \:10091/\;zendhqd\.websocket\.interface \= \:10091/g' /opt/zend/zendphp/etc/zendhqd.ini

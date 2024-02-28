@@ -1,3 +1,11 @@
 <pre>
-<?= var_dump($result); ?>
+<?php if (!empty($result['data'])) : ?>
+<?php try { ?>
+<?php foreach ($result['data'] as $postcode => $row) echo $postcode . ' : ' . implode(':', $row) . PHP_EOL; ?>
+<?php } catch (Throwable $t) { ?>
+<?= 'ERROR!'; ?>
+<?php } ?>
+<?php else : ?>
+No Results!
+<?php endif; ?>
 </pre>

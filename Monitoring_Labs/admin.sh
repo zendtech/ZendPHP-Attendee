@@ -7,6 +7,7 @@ if [[ -z "$1" ]]; then
 fi
 if [[ "$1" = "up" || "$1" = "start" ]]; then
     docker-compose up -d
+    docker exec zendphp_mon /usr/sbin/nginx
 elif [[ "$1" = "down" || "$1" = "stop" ]]; then
     docker-compose down
     sudo chown -R $USER:$USER *
