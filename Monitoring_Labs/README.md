@@ -12,9 +12,6 @@ Copy the license file you obtained before class into the `docker` folder
 * The Dockerfile for the ZendHQ container will place this into the `/entrypoint.d` folder
 * When the container starts, it will use this license
 * Be sure to name the file `license`
-Modify `zendhqd.ini` as desired
-* The Dockerfile for the ZendHQ container will place this into the `/entrypoint.d` folder
-* When the container starts, `zendhqd` will use these INI params
 Modify `default_monitor_rules.json` as desired
 * The Dockerfile for the ZendHQ container will place this into the `/entrypoint.d` folder
 * When the container starts, `zendhqd` will use follow these rules as default
@@ -91,6 +88,7 @@ For the purposes of the monitoring labs we use Apache JMeter to simulate a load
   * For Windows PowerShell prompt: `jmeter-n.cmd`
 * From the GUI, load the test plan
   * Location: `/path/to/repo/Monitoring_Labs/ZendPHP-ZendHQ-Training.jmx`
+
 ## Run the ZendHQ GUI
 * Run the GUI as instructed
   * See: [https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm)
@@ -100,17 +98,34 @@ For the purposes of the monitoring labs we use Apache JMeter to simulate a load
   * Token
     * Enter `zendphp`
 
-## Monitoring
+## Using ZendHQ
+The `/api/query` API has occasional database errors and performance issues (by design).
+* To run a set of test queries use `path/to/repo/Monitoring_Labs/make_calls.sh`
+* Usage:
+```
+Usage: make_calls.sh forecast|query [NUM] [ZRAY_TOKEN]
+       forecast|query : Weather forecast | Postcode lookup
+       NUM : number of calls to make
+       ZRAY_TOKEN : Copy and paste the Z-Ray token
+```
+* To simulate a heavy load (well ... 60 users anyhow!):
+  * Run Apache JMeter
+  * Load the test plan at `path/to/repo/Monitoring_Labs/ZendPHP-ZendHQ-Training.jmx`
 
-
-## Z-Ray
+### Z-Ray
 Test that Z-Ray is responding
 * From the ZendHQ GUI
-  * Locate and copy the session token (top right)
+  * Locate and copy the session token (top right) (`TOKEN`)
+  * Select Z-Ray Live
 * From the browser on your host computer
-  * Enter this URL: `
+  * Enter this URL: `http://zendphp.local/api/forecast?zraytok=TOKEN`
+* From the ZendHQ GUI
+  * Check for a result
 
-## Database Query Introspection
+### Monitoring
+
+
+### Database Query Introspection
 TBD
 
 ## RBAC
