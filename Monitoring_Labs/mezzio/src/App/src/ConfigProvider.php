@@ -6,6 +6,7 @@ namespace App;
  *
  * @see https://docs.laminas.dev/laminas-component-installer/
  */
+use Demo\Number\Prime;
 use Demo\Weather\Forecast;
 use Demo\Geonames\Random;
 use Psr\Container\ContainerInterface;
@@ -36,9 +37,11 @@ class ConfigProvider
                 Postcode::class => Postcode::class,
                 Forecast::class => Forecast::class,
                 Random::class => Random::class,
+                Prime::class => Prime::class,
             ],
             'factories'  => [
                 Handler\HomePageHandler::class => Handler\HomePageHandlerFactory::class,
+                Handler\PrimeHandler::class => Handler\PrimeHandlerFactory::class,
                 Handler\QueryHandler::class => Handler\QueryHandlerFactory::class,
                 Handler\ForecastHandler::class => Handler\ForecastHandlerFactory::class,
                 Handler\InfoHandler::class => Handler\InfoHandlerFactory::class,

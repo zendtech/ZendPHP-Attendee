@@ -1,8 +1,8 @@
 #!/bin/bash
 DIR=`pwd`
 if [[ -z "$1" ]]; then
-    echo "Usage: make_calls.sh forecast|query [NUM] [ZRAY_TOKEN]"
-    echo "       forecast|query : Weather forecast | Postcode lookup"
+    echo "Usage: make_calls.sh forecast|query|prime [NUM] [ZRAY_TOKEN]"
+    echo "       forecast|query|prime : Weather forecast | Postcode lookup | Prime number generation"
     echo "       NUM : number of calls to make"
     echo "       ZRAY_TOKEN : Copy and paste the Z-Ray token"
     exit 1

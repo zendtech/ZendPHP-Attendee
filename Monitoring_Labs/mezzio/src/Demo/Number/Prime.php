@@ -28,4 +28,15 @@ class Prime
             if ($test) yield $x;
         }
     }
+    /**
+     * Generates prime numbers between start and end
+     *
+     * @param int $start : where to start generating primes
+     * @param int $end   : where to end generation
+     * @return Generator
+     */
+    public function make(int $start = self::START, int $end = self::END)
+    {
+        return $this->__invoke($start, $end);
+    }
 }
