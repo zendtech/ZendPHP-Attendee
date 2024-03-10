@@ -160,7 +160,7 @@ Add these contents and save:
 phpinfo();
 ```
 Test the application from your browser:
-* http://10.10.80.10/test.php
+* http://10.10.60.10/test.php
 * or:
 * http://localhost:8888/test.php
 
@@ -177,10 +177,23 @@ This is installed on the server running ZendHQ
 # apk add zendhqd
 ```
 Review the `zendhqd` configuration at `/opt/zend/zendphp/etc/zendhqd.ini`
-* For now just accept the defaults as everything is running in the same container
-* Use `CTL+X` to save exit
 ```
 # nano /opt/zend/zendphp/etc/zendhqd.ini
+```
+Change the setting for `zendhqd.websocket.interface`
+* This needs to listen to external requests on all IP interfaces
+* For the lab we use IP v4
+* Uncomment this line by removing the leading semi-colon (`;`)
+```
+zendhqd.websocket.interface = *:10091
+```
+* Comment-out these lines by adding a leading semi-colon (`;`)
+* Use `CTL+X` to save exit
+```
+# Listen on the IPv4 loopback address only and port number 10091
+;zendhqd.websocket.interface = :10091
+# Listen on the IPv6 loopback address only and port number 10091
+;zendhqd.websocket.interface = ::1:10091
 ```
 ### Install your license
 Exit the container
@@ -195,12 +208,15 @@ Re-enter the container
 ```
 $ docker exec -it zendphp /bin/bash
 ```
-Copy the license from
+Move or copy the license from the shared home directory to `/opt/zend/zendphp/etc/`
+```
+mv /home/training/license /opt/zend/zendphp/etc/license
+```
 
 ### Start the daemon
 * NOTE: you will receive a message regarding a missing license, however the daemon will still run
 ```
-# /opt/zend/zendphp/bin/zendhqd -D
+# /opt/zend/zendphp/bin/zendhqd -D -c /opt/zend/zendphp/etc/zendhqd.ini
 ```
 Confirm that the daemon is running
 ```
@@ -209,33 +225,32 @@ Confirm that the daemon is running
 
 ### Install the ZendHQ PHP Extension
 NOTE: the ZendHQ extension needs to be installed on any PHP installation you wish to monitor
-* In the case of the lab, install the
-ZendHQ PHP extension in the same Docker container
+* In this lab, install the ZendHQ PHP extension in the same Docker container
+* Note that you need to re-export `PHP_VER` because you previously exited the container
 ```
-# zendphpctl ext install zendhq
+# export PHP_VER=8.2
+# zendphpctl ext install --php $PHP_VER zendhq
 ```
 Confirm that extension is installed:
 ```
 # php -m
 ```
 Review the configuration. Make changes as desired.
+* Note that you need to re-export `PHP_VER_ALPINE` because you previously exited the container
+* You can use a new version of PHP if available. The example uses "82".
 * Use `CTL+X` to save and exit
 ```
-# nano /etc/php/82zend/conf.d/10_zendhq.ini
+# export PHP_VER_ALPINE=82
+# nano /etc/php/"$PHP_VER_ALPINE"zend/conf.d/10_zendhq.ini
 ```
 Restart PHP-FPM
-* NOTE: on Debian/Ubuntu or RHEL/Fedora/CentOS systems PHP-FPM will be running under a run service
+* NOTE: on Debian/Ubuntu or RHEL/Fedora/CentOS systems PHP-FPM will be running using a run service
 * For Alpine Linux you need to kill the master process and restart it
-* Assign the correct PHP version number to `PHP_VER`
-  * For Alpine Linux the version numbering does not have a period (".")
-```
-# export PHP_VER_ALPINE=82
-```
-Find the process ID (`PID`) for the PHP-FPM master process:
+* Find the process ID (`PID`) for the PHP-FPM master process:
 ```
 # ps |grep php-fpm
 ```
-Kill the master process
+Kill the `master process`
 * Substitute the PID number in place of "PID":
 ```
 # kill PID
@@ -248,7 +263,6 @@ Confirm the process is running
 ```
 # ps |grep php-fpm
 ```
-
 ## Install the ZendHQ GUI
 The ZendHQ user interface runs separately from the web server
 * Install the GUI on your local computer (*not* inside the container!)
@@ -272,4 +286,28 @@ Run the binary
 # e.g. for Linux on an Intel _x86 CPU:
 $ ./zend-hq-linux_x64
 ```
-For the initial login, enter the username `admin` and the use `zendphp` for the token
+For the initial login, enter the following:
+* Hostname/IP: `10.10.60.10`
+* User name: `admin`
+* User token: `zendphp`
+
+## Test Monitoring
+Exit the container:
+```
+# exit
+```
+Copy the following files into the shared training home directory:
+```
+$ mkdir /path/to/repo/html
+$ cp /path/to/repo/Course_Assets/lookup-app/* /path/to/repo/html
+$ cp /path/to/repo/Course_Assets/sample_data/US_Post_Codes.txt /path/to/repo/html
+```
+Re-enter the container
+```
+$ docker exec -it zendphp /bin/bash
+```
+Move or copy the sample app:
+```
+mv /home/training/html/* /var/www/html
+```
+
