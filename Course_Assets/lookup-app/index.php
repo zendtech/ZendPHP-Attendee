@@ -81,21 +81,36 @@ function find_city( array &$resp,
         }
     }
 }
+function random_city()
+{
+    $name   = '';
+    $cities = [];
+    $data   = new SplFileObject(DATA_FILE);
+    while (!$data->eof()) {
+        $row = $data->fgetcsv("\t");
+        $city = trim($row[2] ?? '');
+        if (empty($city)) continue;
+        $cities[] = $city;
+    }
+    if (!empty($cities)) {
+        $name = $cities[array_rand($cities)];
+    }
+    return $name;
+}
+
 $resp['found'] = 0;
 $city  = $_REQUEST['city'] ?? $argv[1] ?? '';
 $state = $_REQUEST['state'] ?? $argv[2] ?? '';
 $city  = trim(strip_tags($city));
 $state = trim(strip_tags($state));
 if (empty($city)) {
-    $resp['found'] = 0;
-    $resp['data']['Usage'] = $usage;
-} else {
-    $data  = new SplFileObject(DATA_FILE);
-    while (!$data->eof()) {
-        $row = $data->fgetcsv("\t");
-        if (empty($row)) continue;
-        find_city($resp, $row, $city, $state);
-    }
+    $city = random_city();
+}
+$data  = new SplFileObject(DATA_FILE);
+while (!$data->eof()) {
+    $row = $data->fgetcsv("\t");
+    if (empty($row)) continue;
+    find_city($resp, $row, $city, $state);
 }
 if (!empty($_REQUEST)) echo '<pre>';
 echo json_encode($resp, JSON_PRETTY_PRINT);

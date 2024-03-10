@@ -17,11 +17,11 @@ services:
     working_dir: /home/training
     networks:
       zendphp_net:
-        ipv4_address: 10.10.80.10
+        ipv4_address: 10.10.60.10
 
 networks:
   zendphp_net:
     ipam:
       driver: default
       config:
-        - subnet: "10.10.80.0/24"
+        - subnet: "10.10.60.0/24"

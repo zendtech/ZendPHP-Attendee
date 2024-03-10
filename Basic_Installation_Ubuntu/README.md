@@ -1,34 +1,46 @@
 # Demo Installation
 
-Use this container to practice installing ZendPHP and ZendHQ
-* Container is based on Ubuntu Linux
-Prerequisites:
-* A version of Linux
-  * You can build the Docker image specified here
-  * If running Windows you can use WSL
-  * If running Mac you can just open a terminal window and proceed from there
-  * Make sure you have the `curl`,`nano` and `net-tools` packages installed
-* nginx
-  * For more information: [https://nginx.org/en/docs/install.html](https://nginx.org/en/docs/install.html)
-* This repository
-  * You can either clone it or download and unzip
+This lab gives you practice installing ZendPHP and ZendHQ
+* Clone, or download and unzip this repository:
+  * https://github.com/zendtech/ZendPHP-Attendee.git
+* This container is based on Ubuntu Linux
+* The labs work best in a Linux VM or a Linux computer
+* If you're using Windows:
+  * This lab can be performed under Windows Subsystem for Linux (WSL)
+    * However you'll run into routing issues as Windows is incapable of routing to the container
+  * We recommend installing VirtualBox and Vagrant
+    * Use the `Vagrantfile` provided by your setup instructions
+    * Or use the `Vagrantfile` in the `Course_Assets` folder
+  * You also run the lab after installing Docker Desktop
+    * However, you'll run into the same routing issue
+* If you're using a Mac:
+  * You should be able to run this lab after installing Docker Desktop
+* See the `README.md` file in the top folder of this repository for more information
+  * https://github.com/zendtech/ZendPHP-Attendee/blob/master/README.md
+**IMPORTANT** : in these instructions we indicate commands issuesd at the command prompt as a root user using the `#` symbol
+* *DO NOT* incude `#` into the commands you type!
+* This is a convention in Linux to indicate a command-line command issued by the "root" user
+If you see a command that's preceede by `$` instead of `#`:
+  * These commands are issued from a command prompt on your host computer
+  * Do not include `$` in the commands you type!
+
 ## Build the Image
 * Make sure you have Docker Desktop or Docker CE + Docker Compose installed (see `/path/to/repo/README.md`)
 * Open a terminal window and change to this directory (e.g. `/path/to/repo/Basic_Installation`)
 * Build the images:
 ```
-docker-compose build
+$ docker-compose build
 ```
 * Run the images (use the `-d` option to run in background)
 ```
-docker-compose up -d
+$ docker-compose up -d
 ```
 
 ## Install ZendPHP
 Follow these instructions to install ZendPHP from a terminal window in this directory (e.g. `/path/to/repo/Basic_Installation`)
 * Open a shell into the ZendPHP container:
 ```
-docker exec -it zendphp /bin/bash
+$ docker exec -it zendphp /bin/bash
 ```
 Read through these instructions to get an overview of the installation:
   * [https://help.zend.com/zendphp/current/content/installation/zendphpctl.htm](https://help.zend.com/zendphp/current/content/installation/zendphpctl.htm)
@@ -50,7 +62,7 @@ Validate the signature:
 ```
 Check to see what's in your path:
 ```
-echo $PATH
+# echo $PATH
 ```
 If the signature is valid, remove the signature file, set permissions for the script, and move it into a directory in the path for the root user:
 ```

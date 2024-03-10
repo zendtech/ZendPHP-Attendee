@@ -22,7 +22,7 @@ class Postcode
     public const DELIM      = "\t";
     public const TABLE      = 'postcodes';
     public const DATA_DIR   = BASE_DIR . '/data/';
-    public const DATA_FILE  = 'US.txt';
+    public const DATA_FILE  = 'US_Post_Codes.txt';
     public const DB_FN      = 'training.db';
     public const DB_FN_BAK  = 'training.db.bak';
     public const FMT_STRING = '%2s|%11s|%30s|%12s|%2s|%12s|%3s|%12s|%3s|%10s|%10s|%2s';
