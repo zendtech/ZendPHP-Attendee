@@ -308,6 +308,12 @@ $ docker exec -it zendphp /bin/bash
 ```
 Move or copy the sample app:
 ```
+mv /home/training/html/make_calls.sh /home/training/make_calls.sh
 mv /home/training/html/* /var/www/html
 ```
-
+Use `make_calls.sh` to make 100 calls to the sample app
+* Usage:
+```
+# /home/training/make_calls.sh [ZRAY_TOK]
+```
+* Copy and paste the Z-Ray token from the ZendHQ GUI as the optional argument

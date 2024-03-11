@@ -3,8 +3,8 @@
 
 *** Usage ***********************************************
 
-WEB: http://10.10.10.10/index.php?city=Xyz&state=ZZ
-CLI: php lookup.php [CITY] [STATE]
+WEB: http://ip.ad.dr.ess/index.php?city=Xyz&state=ZZ&rand
+CLI: php lookup.php [CITY] [STATE] [rand]
 
 *** Source: https://download.geonames.org/export/zip/ ***
 
@@ -101,6 +101,7 @@ function random_city()
 $resp['found'] = 0;
 $city  = $_REQUEST['city'] ?? $argv[1] ?? '';
 $state = $_REQUEST['state'] ?? $argv[2] ?? '';
+$rand  = isset($_REQUEST['rand']) || in_array('rand', ($argv ?? []));
 $city  = trim(strip_tags($city));
 $state = trim(strip_tags($state));
 if (empty($city)) {
@@ -111,6 +112,9 @@ while (!$data->eof()) {
     $row = $data->fgetcsv("\t");
     if (empty($row)) continue;
     find_city($resp, $row, $city, $state);
+}
+if ($rand) {
+    sleep(rand(1,5));
 }
 if (!empty($_REQUEST)) echo '<pre>';
 echo json_encode($resp, JSON_PRETTY_PRINT);
