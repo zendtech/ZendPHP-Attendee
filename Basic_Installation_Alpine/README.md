@@ -75,7 +75,7 @@ Follow the instructions here in the "Installation using Zendphpctl":
 Test for success:
 ```
 # php -v
-HP 8.2.16 (cli) (built: Feb 27 2024 09:48:40) (NTS)
+PHP 8.2.16 (cli) (built: Feb 27 2024 09:48:40) (NTS)
 Copyright (c) The PHP Group
 Zend Engine v4.2.16, Copyright (c) Zend Technologies
     with Zend OPcache v8.2.16, Copyright (c), by Zend Technologies
@@ -128,18 +128,20 @@ Overwrite the contents with the following:
 ```
 server {
     listen                  80;
-    root                    /var/www/html;
+    root                    /var/www/mezzio/public;
     index                   index.php;
     server_name             _;
     client_max_body_size    32m;
     error_page              500 502 503 504  /50x.html;
     location = /50x.html {
-          root              /var/lib/nginx/html;
+        root              /var/lib/nginx/html;
     }
     location ~ \.php$ {
-          fastcgi_pass      127.0.0.1:9000;
-          fastcgi_index     index.php;
-          include           fastcgi.conf;
+        fastcgi_pass      127.0.0.1:9000;
+        fastcgi_index     index.php;
+        include           fastcgi.conf;
+        fastcgi_param     SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        fastcgi_param     SCRIPT_NAME      $fastcgi_script_name;
     }
 }
 ```
@@ -147,22 +149,26 @@ Restart nginx
 ```
 # /usr/sbin/nginx -s reload
 ```
-## Install a test PHP application
-Open a terminal window and change to this directory (e.g. `/home/training`)
-* Create the sample PHP app:
-* Use `CTL+X` to save and exit
+## Install the demo PHP application
+From outside the container, sample data into the `/path/to/repo/Basic_Installation_Alpine/mezzio/data` folder
 ```
-# nano /var/www/html/test.php
+$ cd /path/to/repo
+$ cp /path/to/repo/Course_Assets/sample_data/* /path/to/repo/Basic_Installation_Alpine/mezzio/data
 ```
-Add these contents and save:
+Update/install the application using Composer:
 ```
-<?php
-phpinfo();
+cd /home/training/mezzio
+php composer.phar self-update
+php composer.phar install
+```
+Test the application from inside the container:
+```
+curl -X GET -H 'Accept: application/json' http://10.10.60.10/api/query
 ```
 Test the application from your browser:
-* http://10.10.60.10/test.php
+* http://10.10.60.10/api/query
 * or:
-* http://localhost:8888/test.php
+* http://localhost:8888/api/query
 
 ## Install ZendHQ
 Review the instructions here:

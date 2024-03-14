@@ -18,7 +18,7 @@ class PrimeHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request) : ResponseInterface
     {
-        $start  = rand(100_000, 500_000);
+        $start  = rand(1_000, 500_000);
         $end    = $start + rand(0, 100_000);
         $output = implode(':', iterator_to_array($this->prime->make($start, $end)));
         $accept = current($request->getHeader('Accept') ?? []);
