@@ -97,6 +97,8 @@ Install PHP-FPM for the default version
 Configure PHP-FPM support
 * For now just review the configuration
 * Use the defaults for the lab
+* IMPORTANT: make a note of the PHP user
+  * In this lab we'll call it `PHP_USER`
 * Use `CTL+X` to save and exit
 ```
 # export EDITOR=/usr/bin/nano
@@ -115,10 +117,6 @@ Confirm PHP-FPM is running
 # ps
 ```
 ## Configure nginx for the application and PHP-FPM
-Create a directory for the web server document root:
-```
-# mkdir /var/www/html
-```
 Open or create a file `/etc/nginx/http.d/default.conf`
 ```
 # nano /etc/nginx/http.d/default.conf
@@ -149,21 +147,20 @@ Restart nginx
 ```
 # /usr/sbin/nginx -s reload
 ```
-## Install the demo PHP application
-From outside the container, sample data into the `/path/to/repo/Basic_Installation_Alpine/mezzio/data` folder
+## Set up the demo PHP application
+Shell into the container
 ```
-$ cd /path/to/repo
-$ cp /path/to/repo/Course_Assets/sample_data/* /path/to/repo/Basic_Installation_Alpine/mezzio/data
+$ docker exec -it zendphp /bin/bash
 ```
-Update/install the application using Composer:
+Use Composer to update/install the demo app
 ```
-cd /home/training/mezzio
-php composer.phar self-update
-php composer.phar install
+# cd /home/training/mezzio
+# php composer.phar self-update
+# php composer.phar install
 ```
 Test the application from inside the container:
 ```
-curl -X GET -H 'Accept: application/json' http://10.10.60.10/api/query
+# curl -X GET -H 'Accept: application/json' http://10.10.60.10/api/query
 ```
 Test the application from your browser:
 * http://10.10.60.10/api/query
@@ -216,11 +213,11 @@ $ docker exec -it zendphp /bin/bash
 ```
 Move or copy the license from the shared home directory to `/opt/zend/zendphp/etc/`
 ```
-mv /home/training/license /opt/zend/zendphp/etc/license
+# mv /home/training/license /opt/zend/zendphp/etc/license
 ```
 
 ### Start the daemon
-* NOTE: you will receive a message regarding a missing license, however the daemon will still run
+Start the daemon
 ```
 # /opt/zend/zendphp/bin/zendhqd -D -c /opt/zend/zendphp/etc/zendhqd.ini
 ```
@@ -252,7 +249,7 @@ Review the configuration. Make changes as desired.
 Restart PHP-FPM
 * NOTE: on Debian/Ubuntu or RHEL/Fedora/CentOS systems PHP-FPM will be running using a run service
 * For Alpine Linux you need to kill the master process and restart it
-* Find the process ID (`PID`) for the PHP-FPM master process:
+Find the process ID (`PID`) for the PHP-FPM master process:
 ```
 # ps |grep php-fpm
 ```
