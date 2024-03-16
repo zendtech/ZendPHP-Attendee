@@ -1,5 +1,5 @@
 <?php
-$max = $_GET['max'] ?? $argv[1] ?? 100;
+$max = $_GET['max'] ?? $argv[1] ?? 1000;
 $max = (int) $max;
 echo "Prime numbers up to $max\n";
 for ($x = 5; $x < $max; $x++) {

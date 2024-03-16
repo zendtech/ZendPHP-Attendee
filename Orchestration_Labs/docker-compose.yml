@@ -1,0 +1,77 @@
+version: '3.3'
+
+services:
+
+  orch_nginx:
+    hostname: orch_nginx
+    container_name: orch_nginx
+    image: phptraining/orch_nginx
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.NGINX
+    ports:
+     - "8888:80"
+    volumes:
+     - .:/home/training
+     - ./mezzio:/var/www/mezzio
+    restart: always
+    working_dir: /home/training
+    networks:
+      orch_net:
+        ipv4_address: 10.10.70.10
+
+  orch_zendhq:
+    hostname: orch_zendhq
+    container_name: orch_zendhq
+    image: phptraining/orch_zendhq
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.ZENDHQ
+    ports:
+     - "10091:10091"
+    volumes:
+     - .:/home/training
+    restart: always
+    working_dir: /home/training
+    networks:
+      orch_net:
+        ipv4_address: 10.10.70.20
+
+  orch_zendphp1:
+    hostname: orch_zendphp1
+    container_name: orch_zendphp1
+    image: phptraining/orch_zendphp1
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.ZENDPHP1
+    volumes:
+     - .:/home/training
+     - ./mezzio:/var/www/mezzio
+    restart: always
+    working_dir: /home/training
+    networks:
+      orch_net:
+        ipv4_address: 10.10.70.30
+
+  orch_zendphp2:
+    hostname: orch_zendphp2
+    container_name: orch_zendphp2
+    image: phptraining/orch_zendphp2
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.ZENDPHP2
+    volumes:
+     - .:/home/training
+     - ./mezzio:/var/www/mezzio
+    restart: always
+    working_dir: /home/training
+    networks:
+      orch_net:
+        ipv4_address: 10.10.70.40
+
+networks:
+  orch_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.10.70.0/24"
