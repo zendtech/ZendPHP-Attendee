@@ -7,9 +7,3 @@ RUN \
     echo "Installing basic utils ..." && \
     apk add nano && \
     apk add sqlite
-RUN \
-    echo "Configuring zendhqd.ini ..." && \
-    sed -i 's/\;zendhqd\.websocket\.interface \= \*\:10091/zendhqd\.websocket\.interface \= \*\:10091/g' /opt/zend/zendphp/etc/zendhqd.ini && \
-    sed -i 's/\;zendhqd\.daemon_uri/zendhqd\.daemon_uri/g' /opt/zend/zendphp/etc/zendhqd.ini && \
-    sed -i 's/zendhqd\.daemon_uri \= tcp\:\/\/127\.0\.0\.1\:10090/zendhqd\.daemon_uri \= tcp\:\/\/0\.0\.0\.0\:10090/g' /opt/zend/zendphp/etc/zendhqd.ini && \
-    sed -i 's/zendhqd\.websocket\.interface \= \:10091/\;zendhqd\.websocket\.interface \= \:10091/g' /opt/zend/zendphp/etc/zendhqd.ini

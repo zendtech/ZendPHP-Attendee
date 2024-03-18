@@ -1,7 +1,6 @@
 #!/bin/bash
 echo 'Resetting permissions'
 chown -R nginx /var/www
-chgrp -R zendphp /var/www
 chmod -R 775 /var/www
 echo 'Staring nginx'
 /usr/sbin/nginx

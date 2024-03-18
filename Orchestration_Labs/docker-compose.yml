@@ -10,7 +10,7 @@ services:
       context: ./docker
       dockerfile: Dockerfile.NGINX
     ports:
-     - "8888:80"
+     - "9999:80"
     volumes:
      - .:/home/training
      - ./mezzio:/var/www/mezzio

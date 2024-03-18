@@ -16,17 +16,7 @@ RUN \
     zendphpctl ext install --php "$ZENDPHP_VERSION" pdo_sqlite
 RUN \
     echo "Installing the ZendHQ extension..." && \
-    zendphpctl ext install --php "$ZENDPHP_VERSION" zendhq && \
-    cp /etc/zendphp/conf.d/10_zendhq.ini /tmp/zendhq.ini.old && \
-    sed -i 's/zendhq\.daemon_uri \= tcp\:\/\/127\.0\.0\.1\:10091/zendhq\.daemon_uri \= tcp\:\/\/10\.10\.70\.20\:10091/g' /etc/zendphp/conf.d/10_zendhq.ini
-RUN \
-    echo "Installing nginx ..." && \
-    apk add nginx && \
-    chown -R nginx /var/www
-RUN \
-    echo "Adding zendphp user to www-data group ..." && \
-    addgroup zendphp www-data
+    zendphpctl ext install --php "$ZENDPHP_VERSION" zendhq
 COPY startup.sh /usr/sbin/startup.sh
-COPY nginx.zendphp.conf /etc/nginx/http.d/nginx.zendphp.conf
 RUN chmod +x /usr/sbin/*.sh
 ENTRYPOINT /usr/sbin/startup.sh
