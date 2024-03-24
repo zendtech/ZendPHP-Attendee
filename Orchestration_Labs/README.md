@@ -1,4 +1,4 @@
-# Monitoring/Automation Labs
+# Orchestration/Monitoring/Automation Labs
 
 Use this set of containers to practice monitoring and automation with ZendHQ
 
@@ -48,10 +48,10 @@ Prepare the sample application
 * Using a graphical file system tool
   * Select the directory where you cloned (or unzipped) this Git repository
   * For this lab we'll call it `/path/to/repo`
-  * Copy the entire `mezzio` directory from `/path/to/repo/Basic_Installation_Alpine/mezzio` to `/path/to/repo/Orchestration_Labs/mezzio`
+  * Copy the entire `mezzio` directory from `/path/to/repo/Basic_Installation/mezzio` to `/path/to/repo/Orchestration_Labs/mezzio`
 * Using the command line, from a terminal window
   * Change directory to `/path/to/repo`
-  * Copy the entire `mezzio` directory from `/path/to/repo/Basic_Installation_Alpine/mezzio` to `/path/to/repo/Orchestration_Labs/mezzio`
+  * Copy the entire `mezzio` directory from `/path/to/repo/Basic_Installation/mezzio` to `/path/to/repo/Orchestration_Labs/mezzio`
 Add the following to the `/etc/hosts` file (or equivalent) on your host computer (not the Docker container!)
 ```
 10.10.70.10  zendphp1.local zendphp2.local
@@ -158,6 +158,10 @@ For the purposes of the monitoring labs we use Apache JMeter to simulate a load
 * Install this on your local computer, not in the container
 * If not already available, install Java 8 Runtime Environment (JRE)
   * See: [https://www.java.com/en/download/help/download_options.html](https://www.java.com/en/download/help/download_options.html)
+  * Run this command to see if Java is installed: `java -?`
+```
+$ sudo apt install -y openjdk-19-jre
+```
 * Download the latest Apache JMeter binary (e.g. 5.6.3)
   * [https://jmeter.apache.org/download_jmeter.cgi](https://jmeter.apache.org/download_jmeter.cgi)
   * Download and extract either the `*.zip` or the `*.gz` file at your preference

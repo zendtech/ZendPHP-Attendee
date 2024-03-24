@@ -84,6 +84,25 @@ Check for installed modules:
 ```
 # php -m
 ```
+## Install an Extension
+Install PDO, PDO_SQLite and cURL (needed to run the demo app)
+* Check to see if extension is already installed:
+```
+# zendphpctl ext list-enabled
+```
+If not already installed, install the PDO extension:
+```
+# zendphpctl ext install pdo
+```
+If not already installed, install the PDO_SQLite extension:
+```
+# zendphpctl ext install pdo_sqlite
+```
+If not already installed, install the curl extension:
+```
+# zendphpctl ext install curl
+```
+
 ## Install PHP-FPM
 Check if FPM support is installed (fpm is-installed)
 ```

@@ -1,5 +1,5 @@
 #!/bin/bash
-. /tmp/secrets.sh
+. docker/secrets.sh
 DIR=`pwd`
 if [[ -z "$1" ]]; then
     echo "Usage: make_calls.sh forecast|query|prime [NUM] [ZRAY_TOKEN]"
