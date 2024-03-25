@@ -6,6 +6,9 @@ echo "Started ZendPHP image successfully"
 chown -R $PHP_USER:$NGINX_GRP $APP_DIR
 chmod -R 775 $APP_DIR
 
+# copy the license file
+/tmp/copy_license.sh
+
 # Start the first process
 /usr/sbin/php-fpm
 status=$?
@@ -25,7 +28,7 @@ fi
 echo "Started nginx succesfully"
 
 # Start the third process
-/opt/zend/zendphp/bin/zendhqd -D
+/opt/zend/zendphp/bin/zendhqd -D -c /opt/zend/zendphp/etc/zendhqd.ini
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start zendhqd: $status"

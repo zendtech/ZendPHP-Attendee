@@ -2,6 +2,7 @@ ARG OS=alpine
 ARG OS_VERSION=3.18
 ARG PHP_VER=8.2
 FROM cr.zend.com/zendhq:${OS}-${OS_VERSION}
+COPY license /tmp/license
 COPY license /entrypoint.d/license
 COPY default_monitor_rules.json /entrypoint.d/default_monitor_rules.json
 COPY secrets.sh /tmp/secrets.sh

@@ -44,4 +44,5 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->get('/api/query', App\Handler\QueryHandler::class, 'api.query');
     $app->get('/api/prime', App\Handler\PrimeHandler::class, 'api.prime');
     $app->get('/api/forecast', App\Handler\ForecastHandler::class, 'api.forecast');
+    $app->post('/api/backup', App\Handler\BackupHandler::class, 'api.backup');
 };

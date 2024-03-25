@@ -34,6 +34,7 @@ class ConfigProvider
         return [
             'invokables' => [
                 Handler\PingHandler::class => Handler\PingHandler::class,
+                Handler\BackupHandler::class => Handler\BackupHandler::class,
                 Postcode::class => Postcode::class,
                 Forecast::class => Forecast::class,
                 Random::class => Random::class,
