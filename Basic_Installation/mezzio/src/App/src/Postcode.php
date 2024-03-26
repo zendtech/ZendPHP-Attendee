@@ -17,6 +17,7 @@ namespace App;
 use PDO;
 use PDOStatement;
 use SplFileObject;
+use Throwable;
 class Postcode
 {
     public const DELIM      = "\t";
@@ -27,6 +28,7 @@ class Postcode
     public const DB_FN_BAK  = 'training.db.bak';
     public const FMT_STRING = '%2s|%11s|%30s|%12s|%2s|%12s|%3s|%12s|%3s|%10s|%10s|%2s';
     public const USAGE      = 'WEB: http://zendphp1.local/api/query?city=Xyz&state=ZZ';
+    public const ERR_DB     = 'ERROR: database error';
     public $sql = '';
     public ?PDO $pdo = NULL;
     public $postcode_fields = [
@@ -76,8 +78,15 @@ class Postcode
                     $update->execute([++$access, $postcode]);
                 } else {
                     $row['access'] = 1;
-                    //echo __METHOD__ . ':' . __LINE__ . ':' . var_export($insert, TRUE); exit;
-                    $insert->execute($row);
+                    try {
+                        $this->pdo->beginTransaction();
+                        $insert->execute($row);
+                        $this->pdo->commit();
+                    } catch (Throwable $t) {
+                        error_log(__METHOD__ . ':' . $t->getMessage());
+                        $this->pdo->rollback();
+                        $respo['error'] = self::ERR_DB;
+                    }
                 }
             }
         }

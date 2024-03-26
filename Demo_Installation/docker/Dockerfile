@@ -38,6 +38,8 @@ RUN \
     zendphpctl ext install --php $PHP_VER zendhq && \
     sed -i 's/\;zendhqd\.websocket\.interface\ \=\ \*\:10091/zendhqd\.websocket\.interface=\*\:10091/g' /opt/zend/zendphp/etc/zendhqd.ini && \
     sed -i 's/zendhqd\.websocket\.interface\ \=\ \:10091/\;zendhqd\.websocket\.interface\=\:10091/g' /opt/zend/zendphp/etc/zendhqd.ini && \
+    sed -i 's/zendhqd\.daemon_uri\ \=\ tcp\:\/\/0\.0\.0\.0\:10090/;zendhqd\.daemon_uri\ \=\ tcp\:\/\/0\.0\.0\.0\:10090/g' /opt/zend/zendphp/etc/zendhqd.ini && \
+    sed -i 's/zendhqd\.daemon_pub_uri\ \=\ tcp\:\/\/0\.0\.0\.0\:10092/;zendhqd\.daemon_pub_uri\ \=\ tcp\:\/\/0\.0\.0\.0\:10092/g' /opt/zend/zendphp/etc/zendhqd.ini && \
     sed -i 's/user\ \=\ nobody/user=zendphp/g'  /etc/php/82zend/php-fpm.d/www.conf && \
     sed -i 's/group\ \=\ nobody/group=zendphp/g'  /etc/php/82zend/php-fpm.d/www.conf
 ENTRYPOINT /tmp/startup.sh

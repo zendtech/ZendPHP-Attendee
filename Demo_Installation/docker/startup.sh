@@ -28,7 +28,7 @@ fi
 echo "Started nginx succesfully"
 
 # Start the third process
-/opt/zend/zendphp/bin/zendhqd -D -c /opt/zend/zendphp/etc/zendhqd.ini
+/opt/zend/zendphp/bin/zendhqd -c /opt/zend/zendphp/etc/zendhqd.ini -D
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start zendhqd: $status"
