@@ -27,7 +27,11 @@ RUN \
     . /tmp/secrets.sh && \
     zendphpctl php install $PHP_VER && \
     zendphpctl ext install --php $PHP_VER pdo_sqlite && \
-    zendphpctl ext install --php $PHP_VER curl
+    zendphpctl ext install --php $PHP_VER curl && \
+    zendphpctl ext install --php $PHP_VER xml && \
+    zendphpctl ext install --php $PHP_VER simplexml && \
+    zendphpctl ext install --php $PHP_VER dom && \
+    zendphpctl ext install --php $PHP_VER xmlwriter
 RUN \
     echo "Installing PHP-FPM ..." && \
     . /tmp/secrets.sh && \

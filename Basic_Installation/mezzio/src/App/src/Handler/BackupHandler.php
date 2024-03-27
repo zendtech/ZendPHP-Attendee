@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Handler;
 
+use const JSON_PRETTY_PRINT;
+
 use App\Postcode;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -17,7 +19,7 @@ class BackupHandler implements RequestHandlerInterface
     public const CODE = '123456';
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $code    = $request->getHeader('Backup-Code');
+        $code = $request->getHeader('Backup-Code');
         if (empty($code) || $code[0] !== self::CODE) {
             $status = 401;
             $txt    = 'Unable to process request';
@@ -33,6 +35,9 @@ class BackupHandler implements RequestHandlerInterface
                 $txt    = 'ERROR: Unable to backup to: ' . $dest_fn;
             }
         }
-        return new JsonResponse(['status' => $status, 'text' => $txt]);
+        return new JsonResponse(['status' => $status, 'text' => $txt],
+                                $status,
+                                [],
+                                JsonResponse::DEFAULT_JSON_FLAGS | JSON_PRETTY_PRINT);
     }
 }

@@ -27,7 +27,7 @@ class Postcode
     public const DB_FN      = 'training.db';
     public const DB_FN_BAK  = 'training.db.bak';
     public const FMT_STRING = '%2s|%11s|%30s|%12s|%2s|%12s|%3s|%12s|%3s|%10s|%10s|%2s';
-    public const USAGE      = 'WEB: http://zendphp1.local/api/query?city=Xyz&state=ZZ';
+    public const USAGE      = 'WEB: http://10.10.60.10/api/query?city=Xyz&state=ZZ';
     public const ERR_DB     = 'ERROR: database error';
     public $sql = '';
     public ?PDO $pdo = NULL;
