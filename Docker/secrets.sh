@@ -1,0 +1,19 @@
+#!/bin/bash
+export PHP_VER="8.3"
+export HOME_DIR=/home/vagrant
+export HOST_NAME="zendphp-hq.local"
+export HOST_URL=http://$HOST_NAME/
+export HOST_OTHER="sandbox"
+export DB_USR=vagrant
+export DB_PWD=vagrant
+export DB_NAM=phpcourse
+export DB_HOST="127.0.0.1"
+export DB_FN="$HOME_DIR/Data/$DB_NAM.sql"
+export ADMINER_VER="4.8.1"
+export REPO_DIR=/home/vagrant
+export REPO_BACKUP_DIR=/home/vagrant/backup
+export CONTAINER=php_architect
+export CONTAINER_IP="10.10.30.10"
+export CONTAINER_SUBNET="10.10.30.0\/24"
+export CONTAINER_GATEWAY="10.10.30.1"
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
