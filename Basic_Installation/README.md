@@ -45,7 +45,7 @@ Follow the instructions here in the "Installation using Zendphpctl":
 * Change `PHP_VER` to the desired PHP version (e.g. `8.3`)
 ```
 # export PHP_VER=8.3
-# apt update
+# apt-get update
 # zendphpctl repo install
 # zendphpctl php install $PHP_VER
 ```
@@ -100,6 +100,13 @@ Configure PHP-FPM support
 # export EDITOR=/usr/bin/nano
 # zendphpctl fpm config
 ```
+Make sure PHP-FPM listens on TCP/IP port 9000:
+* Comment out any listen commands using a socket
+* Add the following: `listen = 0.0.0.0:9000`
+```
+# nano /etc/php/8.2-zend/fpm/pool.d/www.conf
+```
+
 Start PHP-FPM
 ```
 # /etc/init.d/php$PHP_VER-zend-fpm start
@@ -147,7 +154,7 @@ server {
 ```
 Restart nginx
 ```
-# /usr/sbin/nginx -s reload
+# /etc/init.t/nginx restart
 ```
 Test the application from inside the container:
 ```
@@ -168,7 +175,7 @@ If not already done, install the Zend repo:
 ### Install the ZendHQ daemon
 This is installed on the server running ZendHQ
 ```
-# apt install -y zendhqd
+# apt-get install -y zendhqd
 ```
 Review the `zendhqd` configuration at `/opt/zend/zendphp/etc/zendhqd.ini`
 ```

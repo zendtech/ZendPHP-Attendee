@@ -12,10 +12,10 @@ services:
     ports:
      - "9999:80"
     volumes:
-     - .:/home/training
+     - .:/home/vagrant
      - ./mezzio:/var/www/mezzio
     restart: always
-    working_dir: /home/training
+    working_dir: /home/vagrant
     networks:
       orch_net:
         ipv4_address: 10.10.70.10
@@ -30,9 +30,9 @@ services:
     ports:
      - "10091:10091"
     volumes:
-     - .:/home/training
+     - .:/home/vagrant
     restart: always
-    working_dir: /home/training
+    working_dir: /home/vagrant
     networks:
       orch_net:
         ipv4_address: 10.10.70.20
@@ -45,10 +45,10 @@ services:
       context: ./docker
       dockerfile: Dockerfile.ZENDPHP1
     volumes:
-     - .:/home/training
+     - .:/home/vagrant
      - ./mezzio:/var/www/mezzio
     restart: always
-    working_dir: /home/training
+    working_dir: /home/vagrant
     networks:
       orch_net:
         ipv4_address: 10.10.70.30
@@ -61,10 +61,10 @@ services:
       context: ./docker
       dockerfile: Dockerfile.ZENDPHP2
     volumes:
-     - .:/home/training
+     - .:/home/vagrant
      - ./mezzio:/var/www/mezzio
     restart: always
-    working_dir: /home/training
+    working_dir: /home/vagrant
     networks:
       orch_net:
         ipv4_address: 10.10.70.40
