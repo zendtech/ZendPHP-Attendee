@@ -1,20 +1,6 @@
 # Basic Installation Labs
 
 This lab gives you practice installing ZendPHP and ZendHQ
-* Clone, or download and unzip this repository:
-  * https://github.com/zendtech/ZendPHP-Attendee.git
-* This container is based on Alpine Linux
-* The labs work best in a Linux VM or a Linux computer
-* If you're using Windows:
-  * This lab can be performed under Windows Subsystem for Linux (WSL)
-    * However you'll run into routing issues as Windows is incapable of routing to the container
-  * We recommend installing VirtualBox and Vagrant
-    * Use the `Vagrantfile` provided by your setup instructions
-    * Or use the `Vagrantfile` in the `Course_Assets` folder
-  * You also run the lab after installing Docker Desktop
-    * However, you'll run into the same routing issue
-* If you're using a Mac:
-  * You should be able to run this lab after installing Docker Desktop
 * See the `README.md` file in the top folder of this repository for more information
   * https://github.com/zendtech/ZendPHP-Attendee/blob/master/README.md
 **IMPORTANT** : in these instructions we indicate commands issuesd at the command prompt as a root user using the `#` symbol
@@ -24,26 +10,19 @@ If you see a command that's preceede by `$` instead of `#`:
   * These commands are issued from a command prompt on your host computer
   * Do not include `$` in the commands you type!
 
-## Build the Image
-* Make sure you have Docker Desktop or Docker CE + Docker Compose installed (see `/path/to/repo/README.md`)
-* Open a terminal window and change to this directory (e.g. `/path/to/repo/Basic_Installation`)
-* Build the images:
-```
-$ docker-compose build
-```
-* Run the images (use the `-d` option to run in background)
-```
-$ docker-compose up -d
-```
-
 ## Install ZendPHP
-Follow these instructions to install ZendPHP from a terminal window in this directory (e.g. `/path/to/repo/Basic_Installation`)
-* Open a shell into the ZendPHP container:
-```
-$ docker exec -it zendphp /bin/bash
-```
+Login to the VM:
+* Username: **vagrant**
+* Password: **vagrant**
+Open a terminal window using `CTL+ALT+T`
+* Add to `Favorites` by right clicking the terminal window icon on the left side task bar
 Read through these instructions to get an overview of the installation:
   * [https://help.zend.com/zendphp/current/content/installation/zendphpctl.htm](https://help.zend.com/zendphp/current/content/installation/zendphpctl.htm)
+Switch to the `root` user:
+```
+$ sudo -i
+```
+
 ### Install `zendphpctl`
 Download the zendphpctl script and its signature from our repository:
 ```
@@ -63,22 +42,20 @@ If the signature is valid, remove the signature file, set permissions for the sc
 ### Install PHP using `zendphpctl`
 Follow the instructions here in the "Installation using Zendphpctl":
 * [https://help.zend.com/zendphp/current/content/installation/zendphp_alpinelinux.htm](https://help.zend.com/zendphp/current/content/installation/zendphp_alpinelinux.htm)
-* Change `PHP_VER` to the desired PHP version (e.g. `8.2`)
+* Change `PHP_VER` to the desired PHP version (e.g. `8.3`)
 ```
-# export PHP_VER=8.2
-# echo "https://repos.zend.com/zendphp/apk_alpine318/" >> /etc/apk/repositories
-# wget https://repos.zend.com/zendphp/apk_alpine318/zendphp-alpine-devel.rsa.pub -O /etc/apk/keys/zendphp-alpine-devel.rsa.pub
-# apk update
+# export PHP_VER=8.3
+# apt update
 # zendphpctl repo install
 # zendphpctl php install $PHP_VER
 ```
 Test for success:
 ```
 # php -v
-PHP 8.2.16 (cli) (built: Feb 27 2024 09:48:40) (NTS)
+PHP 8.3.16 (cli) (built: Feb 27 2024 09:48:40) (NTS)
 Copyright (c) The PHP Group
 Zend Engine v4.2.16, Copyright (c) Zend Technologies
-    with Zend OPcache v8.2.16, Copyright (c), by Zend Technologies
+    with Zend OPcache v8.3.16, Copyright (c), by Zend Technologies
 ```
 Check for installed modules:
 ```
@@ -124,21 +101,27 @@ Configure PHP-FPM support
 # zendphpctl fpm config
 ```
 Start PHP-FPM
-* Substitute the PHP version in place of `PHP_VER_ALPINE`
-* In Alpine Linux don't add a period between the major and minor number
-* Example: PHP 8.2 would be "82"
 ```
-# export PHP_VER_ALPINE=82
-# /usr/sbin/php-fpm"$PHP_VER_ALPINE"zend
+# /etc/init.d/php$PHP_VER-zend-fpm start
 ```
 Confirm PHP-FPM is running
 ```
 # ps
 ```
-## Configure nginx for the application and PHP-FPM
-Open or create a file `/etc/nginx/http.d/default.conf`
+## Set up the demo PHP application
+Use Composer to update/install the demo app
 ```
-# nano /etc/nginx/http.d/default.conf
+# cd /home/vagrant/Zend/mezzio
+# composer install
+```
+Connect the demo app to the web server directory structure:
+```
+# ln -s /home/vagrant/Zend/mezzio /var/www/mezzio
+```
+## Configure nginx for the application and PHP-FPM
+Open or create a file `/etc/nginx/http.d/default`
+```
+# nano /etc/nginx/http.d/default
 ```
 Overwrite the contents with the following:
 * Use `CTL+X` to save and exit
@@ -150,8 +133,8 @@ server {
     server_name             _;
     client_max_body_size    32m;
     error_page              500 502 503 504  /50x.html;
-    location = /50x.html {
-        root              /var/lib/nginx/html;
+    location = / {
+        try_files $uri /index.php?$query_string;
     }
     location ~ \.php$ {
         fastcgi_pass      127.0.0.1:9000;
@@ -166,37 +149,26 @@ Restart nginx
 ```
 # /usr/sbin/nginx -s reload
 ```
-## Set up the demo PHP application
-Shell into the container
-```
-$ docker exec -it zendphp /bin/bash
-```
-Use Composer to update/install the demo app
-```
-# cd /home/training/mezzio
-# php composer.phar self-update
-# php composer.phar install
-```
 Test the application from inside the container:
 ```
-# curl -X GET -H 'Accept: application/json' http://10.10.60.10/api/query
+# curl -X GET -H 'Accept: application/json' http://localhost/api/query
 ```
 Test the application from your browser:
-* http://10.10.60.10/api/query
-* or:
-* http://localhost:8888/api/query
+* http://localhost/api/query
 
 ## Install ZendHQ
 Review the instructions here:
 * [https://help.zend.com/zendphp/current/content/installation/zendhq_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_installation.htm)
-* If not already done, install the Zend repo:
+Open a terminal windows if not already open: `CTL+ALT+T`
+If not already done, install the Zend repo:
 ```
 # zendphpctl repo install
 ```
+
 ### Install the ZendHQ daemon
 This is installed on the server running ZendHQ
 ```
-# apk add zendhqd
+# apt install -y zendhqd
 ```
 Review the `zendhqd` configuration at `/opt/zend/zendphp/etc/zendhqd.ini`
 ```
@@ -218,23 +190,14 @@ zendhqd.websocket.interface = *:10091
 ;zendhqd.websocket.interface = ::1:10091
 ```
 ### Install your license
-Exit the container
-```
-# exit
-```
-From your host computer, copy your license from its current location into this folder
-```
-$ cp /path/to/license/license /path/to/repo/Basic_Installation/license
-```
-Re-enter the container
-```
-$ docker exec -it zendphp /bin/bash
-```
+From your host computer, copy your license from its current location into the new folder for this course
+* I.e., the folder that contains the `Vagrantfile`
+Switch back to the VM
+
 Move or copy the license from the shared home directory to `/opt/zend/zendphp/etc/`
 ```
-# mv /home/training/license /opt/zend/zendphp/etc/license
+# cp ~/Shared/license /opt/zend/zendphp/etc/license
 ```
-
 ### Start the daemon
 Start the daemon
 ```
@@ -247,10 +210,10 @@ Confirm that the daemon is running
 
 ### Install the ZendHQ PHP Extension
 NOTE: the ZendHQ extension needs to be installed on any PHP installation you wish to monitor
-* In this lab, install the ZendHQ PHP extension in the same Docker container
-* Note that you need to re-export `PHP_VER` because you previously exited the container
+* Note `PHP_VER` is an environment variable you set in an earlier lab
+* If you have subsequently exited the terminal window, you'll need to re-export `PHP_VER`
 ```
-# export PHP_VER=8.2
+# export PHP_VER=8.3
 # zendphpctl ext install --php $PHP_VER zendhq
 ```
 Confirm that extension is installed:
@@ -258,28 +221,13 @@ Confirm that extension is installed:
 # php -m
 ```
 Review the configuration. Make changes as desired.
-* Note that you need to re-export `PHP_VER_ALPINE` because you previously exited the container
-* You can use a new version of PHP if available. The example uses "82".
 * Use `CTL+X` to save and exit
 ```
-# export PHP_VER_ALPINE=82
-# nano /etc/php/"$PHP_VER_ALPINE"zend/conf.d/10_zendhq.ini
-```
-Restart PHP-FPM
-* NOTE: on Debian/Ubuntu or RHEL/Fedora/CentOS systems PHP-FPM will be running using a run service
-* For Alpine Linux you need to kill the master process and restart it
-Find the process ID (`PID`) for the PHP-FPM master process:
-```
-# ps |grep php-fpm
-```
-Kill the `master process`
-* Substitute the PID number in place of "PID":
-```
-# kill PID
+# nano /etc/php/"$PHP_VER"-zend/conf.d/10_zendhq.ini
 ```
 Restart PHP-FPM
 ```
-# /usr/sbin/php-fpm"$PHP_VER_ALPINE"zend
+# /etc/init.d/php$PHP_VER-zend-fpm start
 ```
 Confirm the process is running
 ```
@@ -287,18 +235,21 @@ Confirm the process is running
 ```
 ## Install the ZendHQ GUI
 The ZendHQ user interface runs separately from the web server
-* Install the GUI on your local computer (*not* inside the container!)
+* Normally you would install the GUI on your local computer
+* For the purposes of this course you can install the ZendHQ GUI directly in the VM
 Review the GUI instructions here:
 * [https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm](https://help.zend.com/zendphp/current/content/installation/zendhq_user_interface_installation.htm)
 * The downloads are located here:
   * [https://downloads.zend.com/zendphp/zendhq-ui/](https://downloads.zend.com/zendphp/zendhq-ui/)
-Grab the appropriate compressed download file
-* Example shown is a Linux command
+Open a terminal window and change to the home directory
+* If you have a window open as `root`, exit `sudo -i` interactive shell
+* Return to a shell where you are the `vagrant` user (not `root`)
+Download the appropriate compressed ZendHQ GUI file
 ```
+$ cd
 $ wget https://downloads.zend.com/zendphp/zendhq-ui/zendhq-ui-linux-release.tar.gz
 ```
 Extract them using your preferred archiving tool
-* Example shown is a Linux command
 ```
 $ tar -xvf ./zendhq-ui-linux-release.tar.gz
 ```
@@ -309,33 +260,6 @@ Run the binary
 $ ./zend-hq-linux_x64
 ```
 For the initial login, enter the following:
-* Hostname/IP: `10.10.60.10`
+* Hostname/IP: `localhost`
 * User name: `admin`
 * User token: `zendphp`
-
-## Test Monitoring
-Exit the container:
-```
-# exit
-```
-Copy the following files into the shared training home directory:
-```
-$ mkdir /path/to/repo/html
-$ cp /path/to/repo/Course_Assets/lookup-app/* /path/to/repo/html
-$ cp /path/to/repo/Course_Assets/sample_data/US_Post_Codes.txt /path/to/repo/html
-```
-Re-enter the container
-```
-$ docker exec -it zendphp /bin/bash
-```
-Move or copy the sample app:
-```
-mv /home/training/html/make_calls.sh /home/training/make_calls.sh
-mv /home/training/html/* /var/www/html
-```
-Use `make_calls.sh` to make 100 calls to the sample app
-* Usage:
-```
-# /home/training/make_calls.sh [ZRAY_TOK]
-```
-* Copy and paste the Z-Ray token from the ZendHQ GUI as the optional argument

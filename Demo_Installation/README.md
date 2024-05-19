@@ -3,7 +3,7 @@
 This demo has ZendPHP and ZendHQ configured in a single Alpine Linux based container.
 You can use this container to practice using ZendHQ and the GUI
 
-## Demo Setup
+## Demo Docker Setup
 Copy the demo application:
 ```
 cp -r /path/to/repo/Basic_Installation/mezzio/* \
