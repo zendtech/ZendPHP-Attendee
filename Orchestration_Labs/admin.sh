@@ -6,21 +6,21 @@ if [[ -z "$1" ]]; then
     exit 1
 fi
 if [[ "$1" = "up" || "$1" = "start" ]]; then
-    docker-compose up -d
+    posdman-compose up -d
 elif [[ "$1" = "down" || "$1" = "stop" ]]; then
-    docker-compose down
+    posdman-compose down
     sudo chown -R $USER:$USER *
-    rm docker/license
+    rm posdman/license
 elif [[ "$1" = "ls" ]]; then
-    docker container ls
+    posdman container ls
 elif [[ "$1" = "build" ]]; then
-    docker-compose build
+    posdman-compose build
 elif [[ "$1" = "shell" ]]; then
     if [[ -z ${2} ]]; then
         echo "Unable to locate running container: $2"
-        docker container ls
+        posdman container ls
     else
-        docker exec -it $2 /bin/bash
+        posdman exec -it $2 /bin/bash
     fi
 else
     echo $USAGE
