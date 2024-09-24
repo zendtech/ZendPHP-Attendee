@@ -4,7 +4,7 @@ cd $HOME_DIR
 cd Zend
 echo "Installing misc tools ..." && \
 apt-get update -y
-apt-get install -y git net-tools docker docker-compose geany curl unzip
+apt-get install -y git net-tools git geany curl unzip
 echo "Installing database ..."
 apt-get install -y mysql-server
 /etc/init.d/mysql start

@@ -16,6 +16,7 @@ class QueryHandler implements RequestHandlerInterface
      */
     private $renderer;
     public ?Lookup $lookup = NULL;
+    public ?Postcode $postcode = NULL;
     public function __construct(TemplateRendererInterface $renderer, Postcode $postcode)
     {
         $this->renderer = $renderer;

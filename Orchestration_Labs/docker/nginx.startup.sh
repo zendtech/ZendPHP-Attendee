@@ -1,4 +1,6 @@
 #!/bin/bash
+echo 'Copying config files'
+cp /tmp/*.conf /etc/nginx/http.d
 echo 'Resetting permissions'
 chown -R nginx /var/www
 chmod -R 775 /var/www

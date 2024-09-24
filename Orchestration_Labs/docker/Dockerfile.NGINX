@@ -1,4 +1,8 @@
 FROM alpine:latest
+COPY nginx.startup.sh /usr/sbin/startup.sh
+COPY nginx.default.conf /tmp/default.conf
+COPY nginx.zendphp1.conf /tmp/nginx.zendphp1.conf
+COPY nginx.zendphp2.conf /tmp/nginx.zendphp2.conf
 RUN \
     echo "Installing basic utils ..." && \
     apk add nano && \
@@ -7,8 +11,5 @@ RUN \
     echo "Installing nginx ..." && \
     apk add nginx && \
     chown -R nginx /var/www
-COPY nginx.startup.sh /usr/sbin/startup.sh
-COPY nginx.zendphp1.conf /etc/nginx/http.d/zendphp1.conf
-COPY nginx.zendphp2.conf /etc/nginx/http.d/zendphp2.conf
 RUN chmod +x /usr/sbin/*.sh
 ENTRYPOINT /usr/sbin/startup.sh
