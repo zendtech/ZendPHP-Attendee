@@ -28,7 +28,7 @@ services:
       context: ./docker
       dockerfile: Dockerfile.ZENDHQ
     ports:
-     - "10091:10091"
+     - "19991:10091"
     volumes:
      - .:/home/vagrant
     restart: always
